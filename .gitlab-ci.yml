@@ -1,0 +1,121 @@
+# Kai for Firefox's GitLab CI configuration. The runners are picked by tag.
+#
+# sidebar  every branch: the sidebar page (sidebar/, Rust and wasm): its wire's tests, then the
+#          release build into extension/sidebar/ with lmgw's crates at LMGW_PIN; the built page and
+#          target/sidebar-build.json are the artifact the later jobs pack. Its Rust is rustup's at
+#          scripts/ci/rust-version, as the GitHub release workflow's and the source upload's
+#          rust-toolchain.toml: Fedora's own Rust has its patches, its LLVM and its paths, so a
+#          reviewer's rustup build would make another wasm.
+# check    every branch: lint (with the built page) and the unit tests (no Firefox, no Kai host).
+# build    main only: sign with AMO (unlisted), upload the XPI and updates.json to this project's
+#          generic package registry. That is the builds channel: the XPI's update_url points at the
+#          registry's updates.json (docs/releasing.md).
+#
+# CI/CD variables (Settings > CI/CD > Variables; masked and protected, and main must be a protected branch):
+#   AMO_JWT_ISSUER, AMO_JWT_SECRET   the AMO API key pair
+#   KAI_FIREFOX_UPDATE_TOKEN         optional: "<deploy token user>:<deploy token>", read_package_registry;
+#                                    not needed when the package registry allows anyone to pull
+#
+# lmgw's crates: the sidebar job clones lmgw's project (LMGW_PROJECT, its path on this GitLab) with
+# the job's token next to this repository (LMGW_DIR), checks out the commit LMGW_PIN names, and
+# scripts/lmgw-pin.sh stages the crates from its tree. The token reaches lmgw's project only if
+# lmgw's CI/CD settings allow this project (Job token permissions), as for Kai.
+#
+# Not yet: the end-to-end tests (npm test) need headless Firefox and Kai's kai-browser-host, which is
+# built in a repository CI cannot clone yet; CI runs the unit tests only.
+
+default:
+  tags: [docker]
+  image: node:22
+
+variables:
+  # sign.mjs counts the commits for the version and refuses a shallow clone.
+  GIT_DEPTH: "0"
+  npm_config_cache: "$CI_PROJECT_DIR/.npm"
+  npm_config_audit: "false"
+  npm_config_fund: "false"
+  LMGW_DIR: "$CI_PROJECT_DIR/../lmgw"
+  LMGW_PROJECT: "lmgw-dev/lmgw"
+
+stages: [sidebar, check, build]
+
+cache:
+  key:
+    files: [package-lock.json]
+  paths: [.npm/]
+
+sidebar:
+  stage: sidebar
+  # Fedora 44's image as of 2026-11-02, by digest (its index; the runner takes its amd64 image): the
+  # job's tools stay the same until this line changes.
+  image: fedora:44@sha256:15da97ed9aa94dd3d92c3925eb89520f6c80e07ea7ee24cba848d1f8b6912b3e
+  interruptible: true
+  rules:
+    - if: $CI_COMMIT_BRANCH
+  variables:
+    CARGO_HOME: "$CI_PROJECT_DIR/target/cargo-home"
+    RUSTUP_HOME: "$CI_PROJECT_DIR/target/rustup"
+    XDG_CACHE_HOME: "$CI_PROJECT_DIR/target/cache"
+  cache:
+    key: cargo-sidebar
+    paths:
+      - target/cargo-home/registry/
+      - target/rustup/
+      - sidebar/target/
+  before_script:
+    # rustup from Fedora, the toolchain from rustup at the pinned version; Node writes the build's
+    # record (scripts/sidebar-build.mjs); gcc is the linker cargo wants for the build scripts and
+    # proc macros; diffutils is cmp and diff (scripts/sidebar.sh, scripts/lmgw-pin.sh), which the
+    # Fedora image does not carry. The scripts' other commands (awk, find, xargs, sed, grep,
+    # mktemp, sha256sum, install and the rest of coreutils) are in it.
+    - dnf -y install rustup nodejs22 gcc git curl tar gzip diffutils >/dev/null
+    - rustup-init -y --no-modify-path --profile minimal --default-toolchain "$(cat scripts/ci/rust-version)" --target wasm32-unknown-unknown
+    - export PATH="$CARGO_HOME/bin:$PATH"
+    - rustc --version
+    - bash scripts/ci/install-trunk.sh /usr/local/bin
+    - bash scripts/ci/install-wasm-tools.sh /usr/local/bin
+    - rm -rf "$LMGW_DIR"
+    - git clone --quiet --filter=blob:none --no-checkout
+        "${CI_SERVER_PROTOCOL}://gitlab-ci-token:${CI_JOB_TOKEN}@${CI_SERVER_HOST}:${CI_SERVER_PORT}/${LMGW_PROJECT}.git" "$LMGW_DIR"
+    - git -C "$LMGW_DIR" checkout --quiet --detach "$(bash scripts/lmgw-pin.sh commit)"
+    - bash scripts/lmgw-pin.sh check "$LMGW_DIR"
+  script:
+    - bash scripts/sidebar.sh test
+    - bash scripts/sidebar.sh release
+  artifacts:
+    expire_in: 30 days
+    paths:
+      - extension/sidebar/
+      - target/sidebar-build.json
+
+check:
+  stage: check
+  needs: [sidebar]
+  rules:
+    - if: $CI_COMMIT_BRANCH
+  script:
+    - npm ci --prefer-offline
+    - npm run lint
+    - npm run test:unit
+
+build:
+  stage: build
+  needs: [sidebar, check]
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+  # One build at a time: each one writes the registry's updates.json.
+  resource_group: kai-firefox-publish
+  # sign waits up to 60 minutes for AMO (--wait-min), and a re-run resumes.
+  timeout: 90 minutes
+  script:
+    - npm ci --prefer-offline
+    - npm run sign
+    - npm run publish:gitlab
+  artifacts:
+    when: always
+    expire_in: 30 days
+    paths:
+      - target/sign/
+    exclude:
+      # The staged copy: its manifest holds the update URL, with the credential when there is one.
+      - target/sign/*/ext/**/*

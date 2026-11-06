@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Northwind Outdoor: lamps</title>
+<style>
+  body { font: 16px/1.5 sans-serif; margin: 0; }
+  header, main { padding: 0 24px; }
+  #banner { position: fixed; bottom: 0; left: 0; width: 100%; height: 110px; border: 0; border-top: 1px solid #888; background: #fff; }
+  .card { border-bottom: 1px solid #ccc; padding: 4px 0; }
+  table { border-collapse: collapse; } th, td { border: 1px solid #999; padding: 2px 6px; }
+  [aria-invalid=true] { outline: 2px solid #c00; }
+</style>
+</head>
+<body>
+<!-- The acceptance runs' store front (kai-firefox design §6.6): products with their descriptions and
+     prices, a comparison table, a delivery check whose error and dialog Kai announces, the store's
+     search, and a cookie banner from another origin in a frame. -->
+<header>
+  <p>Northwind Outdoor, store.example</p>
+  <nav aria-label="Main"><a href="/accept/store.html">Store</a> <a href="/help.html">Help</a></nav>
+  <form role="search" action="/accept/search">
+    <label for="q">Search the store</label>
+    <input id="q" name="q" type="search">
+    <button>Search</button>
+  </form>
+</header>
+<main>
+  <h1>Lamps for long evenings</h1>
+  <section class="card" aria-labelledby="h-trail">
+    <h2 id="h-trail">Trail Lamp</h2>
+    <p>A clip-on lamp for the trail, 120 lumens.</p>
+    <p>Price: 29 €</p>
+  </section>
+  <section class="card" aria-labelledby="h-lantern">
+    <h2 id="h-lantern">Lantern Classic</h2>
+    <p>A warm lantern for the camp table.</p>
+    <p>Price: 45 €</p>
+  </section>
+  <section class="card" aria-labelledby="h-head">
+    <h2 id="h-head">Headlamp Pro</h2>
+    <p>A headlamp with a red night mode and a tilting beam, 450 lumens.</p>
+    <p>Price: 59 €</p>
+  </section>
+  <section class="card" aria-labelledby="h-desk">
+    <h2 id="h-desk">Desk Lamp Mini</h2>
+    <p>A folding desk lamp that charges over USB.</p>
+    <p>Price: 19 €</p>
+  </section>
+  <h2>Compare our lamps</h2>
+  <table id="compare">
+    <caption>Lamps compared</caption>
+    <thead><tr><th>Lamp</th><th>Brightness</th><th>Battery</th><th>Price</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">Trail Lamp</th><td>120 lm</td><td>8 h</td><td>29 €</td></tr>
+      <tr><th scope="row">Lantern Classic</th><td>200 lm</td><td>20 h</td><td>45 €</td></tr>
+      <tr><th scope="row">Headlamp Pro</th><td>450 lm</td><td>12 h</td><td>59 €</td></tr>
+      <tr><th scope="row">Desk Lamp Mini</th><td>90 lm</td><td>6 h</td><td>19 €</td></tr>
+    </tbody>
+  </table>
+  <h2>Delivery</h2>
+  <form id="delivery" onsubmit="return false">
+    <p><label for="zip">Postcode</label> <input id="zip" inputmode="numeric" aria-errormessage="zip-error">
+      <span id="zip-error" hidden></span></p>
+    <p><button type="button" id="check">Check delivery</button></p>
+  </form>
+  <p style="height: 140px"></p>
+</main>
+<dialog id="areas" aria-labelledby="areas-title">
+  <h2 id="areas-title">Delivery areas</h2>
+  <p>We deliver to Germany and Austria.</p>
+  <button id="areas-close">Close</button>
+</dialog>
+<iframe id="banner" title="Cookie banner" src="about:blank"></iframe>
+<script>
+  const $ = (id) => document.getElementById(id);
+  // The delivery check: a postcode of five digits, else the field's error and the areas' dialog.
+  $("check").addEventListener("click", () => {
+    const ok = /^[0-9]{5}$/.test($("zip").value.trim());
+    $("zip").setAttribute("aria-invalid", String(!ok));
+    $("zip-error").textContent = ok ? "" : "Enter a postcode of five digits.";
+    $("zip-error").hidden = ok;
+    if (!ok) $("areas").showModal();
+  });
+  $("areas-close").addEventListener("click", () => $("areas").close());
+  // The cookie banner comes from the other origin (localhost vs 127.0.0.1), on the same port, and
+  // asks the page to take its frame away when it is closed.
+  const other = location.hostname === "127.0.0.1" ? "localhost" : "127.0.0.1";
+  $("banner").src = `http://${other}:${location.port}/accept/banner.html`;
+  addEventListener("message", (e) => {
+    if (e.origin === `http://${other}:${location.port}` && e.data === "banner-closed") $("banner").remove();
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Hop pane</title>
+<style>html, body { margin: 0; background: #ffff00; } #next { margin: 20px; }</style>
+</head>
+<body>
+<button id="next">Next</button>
+<script>
+  // When Kai's labels' host is hidden for a screenshot, this pane goes to another site
+  // (127.0.0.2), so the capture shows the pane after its site changed.
+  new MutationObserver((records, observer) => {
+    for (const r of records) {
+      const el = r.target;
+      if (el.parentNode === document.documentElement && el !== document.body && el !== document.head && el.style.display === "none") {
+        observer.disconnect();
+        location.replace(`http://127.0.0.2:${location.port}/help.html`);
+        return;
+      }
+    }
+  }).observe(document.documentElement, { attributes: true, subtree: true, attributeFilter: ["style"] });
+</script>
+</body>
+</html>

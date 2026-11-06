@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>See: Northwind Gear</title>
+<style>
+  /* Boxes of plain colours at known places, each with its name in its own colour (invisible). */
+  html, body { margin: 0; background: #ffffff; }
+  .box { position: absolute; margin: 0; font: 14px/1 sans-serif; }
+  #red { left: 100px; top: 100px; width: 200px; height: 100px; background: #ff0000; color: #ff0000; }
+  #go { position: absolute; left: 400px; top: 120px; width: 160px; height: 40px; border: 0; background: #00ff00; color: #000000; font: 16px sans-serif; }
+  #blue { left: 50px; top: 2000px; width: 120px; height: 80px; background: #0000ff; color: #0000ff; }
+  iframe { position: absolute; left: 700px; top: 100px; width: 300px; height: 200px; border: 0; }
+  #spacer { height: 3000px; }
+</style>
+</head>
+<body>
+<p id="red" class="box">Red box</p>
+<button id="go">Go</button>
+<p id="blue" class="box">Blue box</p>
+<iframe id="pane" title="Pane"></iframe>
+<div id="spacer"></div>
+<script>
+  // The pane comes from the other origin (localhost vs 127.0.0.1), on the same port.
+  document.getElementById("pane").src = `http://localhost:${location.port}/see-frame.html`;
+</script>
+</body>
+</html>

@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Your order: Northwind Gear</title>
+<style>
+  body { font: 16px/1.5 sans-serif; margin: 0 24px; }
+  [role=option][aria-selected=true] { background: #3daee9; }
+  #pane { height: 120px; overflow: auto; border: 1px solid #888; }
+  /* The box itself is visually hidden, its label shows: the accessible way to style a checkbox. */
+  .terms input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+  #pack li, #sort li { padding: 4px; border: 1px solid #ccc; list-style: none; }
+</style>
+</head>
+<body>
+<h1>Your order</h1>
+<form id="details" onsubmit="return false">
+  <p><label for="name">Full name</label> <input id="name"></p>
+  <p id="greeting">Hello, nobody</p>
+  <p><label for="city">City</label> <input id="city" role="combobox" aria-autocomplete="list" aria-controls="cities" aria-expanded="false"></p>
+  <ul id="cities" role="listbox" aria-label="Cities" hidden></ul>
+  <p>Keys in City: <span id="city-keys">0</span></p>
+  <div><span id="note-label">Note</span> <div id="note" contenteditable="true" role="textbox" aria-labelledby="note-label"><p>Leave at the door</p></div></div>
+  <p>Note as the editor keeps it: <span id="note-model">Leave at the door</span></p>
+  <div><span id="stubborn-label">Gift message</span> <div id="stubborn" contenteditable="true" role="textbox" aria-labelledby="stubborn-label">Happy birthday</div></div>
+  <p><label for="volume">Volume</label> <input id="volume" type="range" min="0" max="100" step="5" value="50"> <output id="volume-out">50</output></p>
+  <p><span id="bright-label">Brightness</span> <span id="bright" role="slider" tabindex="0" aria-labelledby="bright-label" aria-valuemin="0" aria-valuemax="10" aria-valuenow="3">3</span></p>
+  <p><span id="warm-label">Warmth</span> <span id="warm" role="slider" tabindex="0" aria-labelledby="warm-label" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">0</span></p>
+  <p><label for="arrival">Arrival</label> <input id="arrival" type="date"></p>
+  <p><label for="qty">Quantity</label> <input id="qty" type="number" min="1" max="9" value="1"></p>
+  <p><label for="country">Country</label> <select id="country"><option>Choose one</option><option>Germany</option><option>Austria</option><option disabled>Mars</option></select></p>
+  <fieldset id="shipping"><legend>Shipping</legend>
+    <label><input type="radio" name="ship" value="std" checked> Standard</label>
+    <label><input type="radio" name="ship" value="exp"> Express</label>
+    <label><input type="radio" name="ship" value="pick"> Pickup</label>
+  </fieldset>
+  <div id="colours" role="listbox" aria-label="Colour" tabindex="0">
+    <div role="option" aria-selected="true">Graphite</div>
+    <div role="option" aria-selected="false">Blue</div>
+    <div role="option" aria-selected="false">Sand</div>
+  </div>
+  <p><label><input type="checkbox" id="gift"> Gift wrap</label></p>
+  <p><span id="news-label">Newsletter</span> <span id="news" role="switch" tabindex="0" aria-checked="false" aria-labelledby="news-label">off</span></p>
+  <p class="terms"><input type="checkbox" id="terms"><label for="terms">I accept the terms</label></p>
+  <p><label for="receipt">Receipt</label> <input id="receipt" type="file"> <span id="receipt-name">no file</span></p>
+  <p><label for="pw">Password</label> <input id="pw" type="password"></p>
+  <p><label for="voucher">Voucher</label> <input id="voucher" disabled></p>
+  <p><label for="order-no">Order number</label> <input id="order-no" readonly value="NW-0001"></p>
+  <p><label for="notes">Notes</label> <textarea id="notes"></textarea></p>
+</form>
+<h2>Packing order</h2>
+<ul id="pack" aria-label="Packing order">
+  <li draggable="true" id="pack-lamp">Lamp</li><li draggable="true" id="pack-tent">Tent</li><li draggable="true" id="pack-stove">Stove</li>
+</ul>
+<p>Packed: <span id="pack-order">Lamp, Tent, Stove</span></p>
+<ul id="sort" aria-label="Sort order">
+  <li tabindex="0">One</li><li tabindex="0">Two</li><li tabindex="0">Three</li>
+</ul>
+<p>Sorted: <span id="sort-order">One, Two, Three</span></p>
+<h2>Terms</h2>
+<div id="pane" tabindex="0" aria-label="Terms text"></div>
+<p><button id="account" aria-haspopup="menu" aria-expanded="false">Account</button></p>
+<ul id="menu" role="menu" hidden><li role="menuitem">Sign out</li></ul>
+<p><button id="open-dialog">Edit address</button></p>
+<dialog id="address" aria-label="Address"><p>Street 1, 198.51.100.7</p><button id="close-dialog">Close</button></dialog>
+<p><a href="help.html" target="_blank" id="prices">Open the price list</a></p>
+<video id="clip" controls width="160" height="90" aria-label="Product video"></video>
+<p><button id="full">Full screen</button></p>
+<form id="signup" action="/subscribe" method="post">
+  <label for="email">E-mail</label> <input id="email" name="email" type="email">
+  <button>Sign up</button>
+</form>
+<form id="find" action="/search" method="get"><label for="q">Search</label> <input id="q" name="q"> <button>Find</button></form>
+<p>Last key: <span id="last-key">none</span></p>
+<script src="form.js"></script>
+</body>
+</html>

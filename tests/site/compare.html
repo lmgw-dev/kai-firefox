@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Compare tents: Northwind Gear</title>
+<style>table { border-collapse: collapse; margin: 8px 0; } th, td { border: 1px solid #999; padding: 2px 6px; }</style></head>
+<body>
+<h1>Compare tents</h1>
+<p id="intro">Three tents, side by side.</p>
+<table id="compare">
+  <caption>Tents compared</caption>
+  <thead>
+    <tr><th rowspan="2">Tent</th><th colspan="2">Weight</th><th rowspan="2">Price</th></tr>
+    <tr><th>Packed</th><th>Trail</th></tr>
+  </thead>
+  <tbody>
+    <tr><th scope="row">Ridge Tent</th><td>2.1 kg</td><td id="ridge-trail">1.8 kg</td><td>189 €</td></tr>
+    <tr><th scope="row">Valley Tent</th><td colspan="2">2.9 kg</td><td rowspan="2">149 €</td></tr>
+    <tr><th scope="row">Lake Tent</th><td>3.4 kg</td><td>3.1 kg</td></tr>
+  </tbody>
+</table>
+<h2>Delivery</h2>
+<table id="delivery">
+  <tr><td></td><th id="d-std">Standard</th><th id="d-exp">Express</th></tr>
+  <tr><th id="d-de">Germany</th><td headers="d-de d-std">4.90 €</td><td headers="d-exp d-de">9.90 €</td></tr>
+  <tr><th id="d-at">Austria</th><td headers="d-at d-std">6.90 €</td><td headers="d-at d-exp">12.90 €</td></tr>
+</table>
+<h2>Opening hours</h2>
+<div role="table" id="hours" aria-label="Opening hours">
+  <div role="rowgroup"><div role="row"><span role="columnheader">Day</span> <span role="columnheader">Hours</span></div></div>
+  <div role="rowgroup">
+    <div role="row"><span role="rowheader">Monday</span> <span role="cell">9–18</span></div>
+    <div role="row"><span role="rowheader">Saturday</span> <span role="cell" id="saturday">10–14</span></div>
+  </div>
+</div>
+<h2>Schedule</h2>
+<table id="schedule">
+  <tr><th>Day</th><th>Hours</th></tr>
+  <tr><th colspan="2">Weekdays</th></tr>
+  <tr><td>Monday</td><td>9–18</td></tr>
+  <tr style="display: none"><td>Hidden day</td><td>never</td></tr>
+  <tr><th colspan="2">Weekend</th></tr>
+  <tr><td>Sunday</td><td>closed</td></tr>
+  <tr><th>Day</th><th>Hours</th></tr>
+  <tr><td>Holiday</td><td>10–12 <span style="display: none">hidden cell text</span></td><td style="display: none">hidden cell</td></tr>
+</table>
+<h2>Pay</h2>
+<table id="pay"><tr><th>Card</th><td><input id="pay-card" autocomplete="cc-number" aria-label="Card number" value="4111 1111 1111 1111"></td></tr></table>
+</body>
+</html>

@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Delivery slot: Northwind Gear</title>
+</head>
+<body>
+<!-- Inputs HTML-AAM gives no ARIA role (the contract's Element: role words for inputs), and one
+     element of the ARIA role `time` that is no field. -->
+<h1>Delivery slot</h1>
+<p>Last change: <time datetime="2026-11-03">3 November</time></p>
+<form onsubmit="return false">
+  <p><label for="photo">Photo</label> <input id="photo" type="file"></p>
+  <p><label for="day">Day</label> <input id="day" type="date"></p>
+  <p><label for="at">Time</label> <input id="at" type="time"></p>
+  <p><label for="slot">Slot</label> <input id="slot" type="datetime-local"></p>
+  <p><label for="month">Month</label> <input id="month" type="month"></p>
+  <p><label for="week">Week</label> <input id="week" type="week"></p>
+  <p><label for="colour">Colour</label> <input id="colour" type="color" value="#3daee9"></p>
+  <p><label for="tip">Tip</label> <input id="tip" type="range" min="0" max="10" value="2"></p>
+</form>
+</body>
+</html>

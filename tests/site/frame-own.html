@@ -1,0 +1,11 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Own frame</title></head>
+<body>
+<!-- framed.html's same-origin frame: a form that posts to the top document. -->
+<form action="/from-frame" method="post" target="_top">
+  <input type="hidden" name="from" value="frame">
+  <p><button>Post up from the frame</button></p>
+</form>
+</body>
+</html>

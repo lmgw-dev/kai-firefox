@@ -1,0 +1,13 @@
+target/
+.npm/
+node_modules/
+dist/
+# the sidebar page as scripts/sidebar.sh builds it into the extension, and its machine-specific
+# cargo configuration: made at package time, never committed (design §10)
+extension/sidebar/
+sidebar/.cargo/
+# signing output and credentials stay out of the repository
+*.xpi
+.env
+updates.json
+__pycache__/

@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Buy: Northwind Gear</title></head>
+<body>
+<h1>Buy the Trail Lamp</h1>
+<form id="order" action="/order" method="post">
+  <input type="hidden" name="item" value="trail-lamp">
+  <p><label for="buyer">Name</label> <input id="buyer" name="buyer" value="Ada Example"></p>
+  <p><label for="card">Card number</label> <input id="card" name="card" autocomplete="cc-number" value="4111 1111 1111 1111"></p>
+  <p><button id="buy">Buy now</button> <button type="button" id="add-note">Add a note</button></p>
+</form>
+<!-- Its action is set to the other origin (localhost vs 127.0.0.1) by the script below. -->
+<form id="partner" method="post">
+  <input type="hidden" name="plan" value="basic">
+  <p><button id="continue">Continue</button></p>
+</form>
+<p><a href="/account/close" id="close-account">Delete account</a> <a href="#" id="remove-item">Remove the lamp</a>
+  <a href="javascript:void 0" id="cancel-order">Cancel the order</a> <a href="/help.html" target="_blank" id="buy-help">How to buy</a></p>
+<p id="noted">no note</p>
+<script>
+  const other = location.hostname === "127.0.0.1" ? "localhost" : "127.0.0.1";
+  document.getElementById("partner").action = `http://${other}:${location.port}/partner`;
+  document.getElementById("add-note").addEventListener("click", () => (document.getElementById("noted").textContent = "note added"));
+  // Links that act through the page's script, not by loading another page.
+  document.getElementById("remove-item").addEventListener("click", (e) => (e.preventDefault(), (document.getElementById("noted").textContent = "lamp removed")));
+</script>
+</body>
+</html>

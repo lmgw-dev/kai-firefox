@@ -1,0 +1,1 @@
+window.pageGlobal = 42;

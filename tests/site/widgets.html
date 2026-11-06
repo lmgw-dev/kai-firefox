@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Widgets: Northwind Gear</title></head>
+<body>
+<h1>Widgets that commit late</h1>
+<!-- State committed in a microtask, as React 18 batches it: a controlled field that keeps five
+     digits at most (a longer value is put back), a slider whose value follows its keys a microtask
+     later, and a long slider with Page Up and Page Down. -->
+<p><label for="postcode">Postcode</label> <input id="postcode"></p>
+<p><span id="level-label">Level</span> <span id="level" role="slider" tabindex="0" aria-labelledby="level-label" aria-valuemin="0" aria-valuemax="10" aria-valuenow="2">2</span></p>
+<p><span id="budget-label">Budget</span> <span id="budget" role="slider" tabindex="0" aria-labelledby="budget-label" aria-valuemin="0" aria-valuemax="1000" aria-valuenow="0">0</span></p>
+<p>Keys on Budget: <span id="budget-keys">0</span></p>
+<script>
+  const $ = (id) => document.getElementById(id);
+  const native = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value");
+  let postcode = "";
+  $("postcode").addEventListener("input", () => {
+    const v = native.get.call($("postcode"));
+    queueMicrotask(() => {
+      if (/^\d{0,5}$/.test(v)) postcode = v;
+      native.set.call($("postcode"), postcode);
+    });
+  });
+  function slider(el, step, page, onKey) {
+    el.addEventListener("keydown", (e) => {
+      const min = Number(el.getAttribute("aria-valuemin"));
+      const max = Number(el.getAttribute("aria-valuemax"));
+      let v = Number(el.getAttribute("aria-valuenow"));
+      if (e.key === "ArrowRight" || e.key === "ArrowUp") v += step;
+      else if (e.key === "ArrowLeft" || e.key === "ArrowDown") v -= step;
+      else if (e.key === "PageUp" && page) v += page;
+      else if (e.key === "PageDown" && page) v -= page;
+      else if (e.key === "Home") v = min;
+      else if (e.key === "End") v = max;
+      else return;
+      e.preventDefault();
+      onKey?.();
+      v = Math.max(min, Math.min(max, v));
+      queueMicrotask(() => {
+        el.setAttribute("aria-valuenow", String(v));
+        el.textContent = String(v);
+      });
+    });
+  }
+  slider($("level"), 1, 0);
+  let keys = 0;
+  slider($("budget"), 1, 100, () => ($("budget-keys").textContent = String(++keys)));
+</script>
+</body>
+</html>

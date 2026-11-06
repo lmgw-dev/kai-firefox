@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Preview</title>
+  <!-- The Chat's HTML preview in the sidebar (design §8.2 item 6, lmgw's PreviewFrame::Posted):
+       listed in the manifest's sandbox.pages, so it runs under content_security_policy.sandbox
+       (an opaque origin, no extension API, inline scripts allowed, remote ones not). The Chat
+       loads it as its frame's src and posts the code; preview.js shows it in a srcdoc frame of
+       its own, which inherits this page's policy. -->
+  <link rel="stylesheet" href="preview.css">
+  <script src="preview.js"></script>
+</head>
+<body></body>
+</html>

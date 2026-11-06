@@ -1,0 +1,813 @@
+{
+  "firefox": "159.0 20261027085239",
+  "dist": "spikes/sidebar/dist-debug",
+  "targets": {
+    "sidebar": {
+      "defaultInnerWidth": 338,
+      "loads": [
+        {
+          "kind": "cold",
+          "wasmStarted": 78,
+          "firstDom": 78,
+          "firstFrame": 113,
+          "fcp": 112,
+          "loadEvent": 47
+        },
+        {
+          "kind": "reload",
+          "wasmStarted": 50,
+          "firstDom": 50,
+          "firstFrame": 62,
+          "fcp": 53,
+          "loadEvent": 20
+        },
+        {
+          "kind": "reload",
+          "wasmStarted": 36,
+          "firstDom": 36,
+          "firstFrame": 53,
+          "fcp": 39,
+          "loadEvent": 10
+        },
+        {
+          "kind": "reload",
+          "wasmStarted": 45,
+          "firstDom": 45,
+          "firstFrame": 64,
+          "fcp": 50,
+          "loadEvent": 11
+        },
+        {
+          "kind": "reload",
+          "wasmStarted": 33,
+          "firstDom": 33,
+          "firstFrame": 55,
+          "fcp": 41,
+          "loadEvent": 9
+        },
+        {
+          "kind": "reload",
+          "wasmStarted": 37,
+          "firstDom": 37,
+          "firstFrame": 50,
+          "fcp": 40,
+          "loadEvent": 9
+        }
+      ],
+      "summary": {
+        "cold": {
+          "kind": "cold",
+          "wasmStarted": 78,
+          "firstDom": 78,
+          "firstFrame": 113,
+          "fcp": 112,
+          "loadEvent": 47
+        },
+        "reloadMedian": {
+          "wasmStarted": 37,
+          "firstDom": 37,
+          "firstFrame": 55,
+          "fcp": 41
+        }
+      },
+      "resources": [],
+      "control": {
+        "inline": "blocked",
+        "eval": "blocked:EvalError: call to eval() blocked by CSP",
+        "newFunction": "blocked:EvalError: call to Function() blocked by CSP",
+        "wasm": "ran:function"
+      },
+      "controlViolations": [
+        "script-src-elem:inline",
+        "script-src-elem:inline",
+        "script-src:eval",
+        "script-src:eval",
+        "script-src:eval",
+        "script-src:eval"
+      ],
+      "dom": {
+        "threads": 5,
+        "messages": 4,
+        "table": true,
+        "codeBlock": true,
+        "rawScriptAsText": true,
+        "scriptElementsInMessage": 0,
+        "section": true,
+        "dialog": true,
+        "bodyBg": "rgb(22, 25, 28)",
+        "accent": "#3DAEE9",
+        "width": 320,
+        "height": 622,
+        "overflowX": false
+      },
+      "shotBytes": {
+        "shot": 0,
+        "shot280": 0,
+        "shotPreview": 0
+      },
+      "dom280": {
+        "width": 280,
+        "overflowX": false
+      },
+      "frameMessages": [
+        {
+          "kind": "v2-page",
+          "origin": "moz-extension://faffce96-b898-4e52-b1c8-df067ac9431b",
+          "windowOrigin": "null",
+          "evalWorks": false,
+          "inlineWorks": true,
+          "parentAccess": false,
+          "hasBrowserApi": false,
+          "sandboxed": "cookie: SecurityError",
+          "at": 1174
+        },
+        {
+          "kind": "v3-page",
+          "origin": "moz-extension://faffce96-b898-4e52-b1c8-df067ac9431b",
+          "windowOrigin": "moz-extension://faffce96-b898-4e52-b1c8-df067ac9431b",
+          "evalWorks": false,
+          "inlineWorks": false,
+          "parentAccess": true,
+          "hasBrowserApi": true,
+          "sandboxed": "cookie readable",
+          "at": 1174
+        },
+        {
+          "kind": "v2b-page",
+          "origin": "moz-extension://faffce96-b898-4e52-b1c8-df067ac9431b",
+          "windowOrigin": "null",
+          "evalWorks": true,
+          "inlineWorks": true,
+          "parentAccess": false,
+          "hasBrowserApi": false,
+          "sandboxed": "cookie: SecurityError",
+          "at": 1178
+        },
+        {
+          "kind": "v3b-page",
+          "origin": "moz-extension://faffce96-b898-4e52-b1c8-df067ac9431b",
+          "windowOrigin": "null",
+          "evalWorks": true,
+          "inlineWorks": true,
+          "parentAccess": false,
+          "hasBrowserApi": false,
+          "sandboxed": "cookie: SecurityError",
+          "at": 1178
+        },
+        {
+          "kind": "v2-nested",
+          "scriptRan": true,
+          "origin": "null",
+          "at": 1218
+        },
+        {
+          "kind": "v2b-nested",
+          "scriptRan": true,
+          "origin": "null",
+          "at": 1221
+        },
+        {
+          "kind": "v3b-nested",
+          "scriptRan": true,
+          "origin": "null",
+          "at": 1222
+        }
+      ],
+      "checks": [
+        {
+          "ok": true,
+          "what": "no CSP violation on a normal load (page's securitypolicyviolation events)",
+          "extra": []
+        },
+        {
+          "ok": true,
+          "what": "no script error on a normal load",
+          "extra": []
+        },
+        {
+          "ok": true,
+          "what": "page origin is the extension's"
+        },
+        {
+          "ok": true,
+          "what": "no CSP message in Firefox's console during the loads (log.entryAdded)"
+        },
+        {
+          "ok": true,
+          "what": "negative control: an inline script, eval() and new Function() are refused",
+          "extra": {
+            "inline": "blocked",
+            "eval": "blocked:EvalError: call to eval() blocked by CSP",
+            "newFunction": "blocked:EvalError: call to Function() blocked by CSP",
+            "wasm": "ran:function"
+          }
+        },
+        {
+          "ok": true,
+          "what": "WebAssembly is available ('wasm-unsafe-eval')"
+        },
+        {
+          "ok": true,
+          "what": "thread list and four messages rendered, markdown with table and code block",
+          "extra": {
+            "threads": 5,
+            "messages": 4,
+            "table": true,
+            "codeBlock": true,
+            "rawScriptAsText": true,
+            "scriptElementsInMessage": 0,
+            "section": true,
+            "dialog": true,
+            "bodyBg": "rgb(22, 25, 28)",
+            "accent": "#3DAEE9",
+            "width": 320,
+            "height": 622,
+            "overflowX": false
+          }
+        },
+        {
+          "ok": true,
+          "what": "raw HTML in a message is text, not an element"
+        },
+        {
+          "ok": true,
+          "what": "kit Section and Modal are in the DOM"
+        },
+        {
+          "ok": true,
+          "what": "kit.css tokens applied (--bg0, --accent)",
+          "extra": {
+            "bg": "rgb(22, 25, 28)",
+            "accent": "#3DAEE9"
+          }
+        },
+        {
+          "ok": true,
+          "what": "320 px wide, no horizontal overflow",
+          "extra": {
+            "width": 320
+          }
+        },
+        {
+          "ok": true,
+          "what": "280 px wide: no horizontal overflow",
+          "extra": {
+            "width": 280,
+            "overflowX": false
+          }
+        },
+        {
+          "ok": true,
+          "what": "kit Modal opens (<dialog> showModal) in the extension page"
+        },
+        {
+          "ok": true,
+          "what": "V1 srcdoc frame in the sidebar page: its inline <script> is refused (the frame inherits the page's CSP)"
+        },
+        {
+          "ok": true,
+          "what": "v2: the page in sandbox.pages runs with an opaque origin, no access to the sidebar and no browser API",
+          "extra": {
+            "kind": "v2-page",
+            "origin": "moz-extension://faffce96-b898-4e52-b1c8-df067ac9431b",
+            "windowOrigin": "null",
+            "evalWorks": false,
+            "inlineWorks": true,
+            "parentAccess": false,
+            "hasBrowserApi": false,
+            "sandboxed": "cookie: SecurityError",
+            "at": 1174
+          }
+        },
+        {
+          "ok": true,
+          "what": "v2: the HTML in its nested srcdoc frame ran its inline <script>",
+          "extra": {
+            "kind": "v2-nested",
+            "scriptRan": true,
+            "origin": "null",
+            "at": 1218
+          }
+        },
+        {
+          "ok": true,
+          "what": "v2b: the page in sandbox.pages runs with an opaque origin, no access to the sidebar and no browser API",
+          "extra": {
+            "kind": "v2b-page",
+            "origin": "moz-extension://faffce96-b898-4e52-b1c8-df067ac9431b",
+            "windowOrigin": "null",
+            "evalWorks": true,
+            "inlineWorks": true,
+            "parentAccess": false,
+            "hasBrowserApi": false,
+            "sandboxed": "cookie: SecurityError",
+            "at": 1178
+          }
+        },
+        {
+          "ok": true,
+          "what": "v2b: the HTML in its nested srcdoc frame ran its inline <script>",
+          "extra": {
+            "kind": "v2b-nested",
+            "scriptRan": true,
+            "origin": "null",
+            "at": 1221
+          }
+        },
+        {
+          "ok": true,
+          "what": "v2: the manifest's sandbox CSP is the page's policy (inline allowed, eval refused)",
+          "extra": {
+            "inline": true,
+            "eval": false
+          }
+        },
+        {
+          "ok": true,
+          "what": "v2b (observed, Firefox 159): with the iframe's sandbox attribute the page's CSP is not applied (eval runs although the sandbox CSP refuses it)",
+          "extra": {
+            "eval": true
+          }
+        },
+        {
+          "ok": true,
+          "what": "v3b (observed, Firefox 159): an ordinary extension page (not in sandbox.pages) in an iframe with the sandbox attribute is opaque, has no browser API and no CSP",
+          "extra": {
+            "kind": "v3b-page",
+            "origin": "moz-extension://faffce96-b898-4e52-b1c8-df067ac9431b",
+            "windowOrigin": "null",
+            "evalWorks": true,
+            "inlineWorks": true,
+            "parentAccess": false,
+            "hasBrowserApi": false,
+            "sandboxed": "cookie: SecurityError",
+            "at": 1178
+          }
+        },
+        {
+          "ok": true,
+          "what": "v3 (control, not in sandbox.pages): an ordinary extension page: own origin, the sidebar within reach, browser API, eval refused",
+          "extra": {
+            "kind": "v3-page",
+            "origin": "moz-extension://faffce96-b898-4e52-b1c8-df067ac9431b",
+            "windowOrigin": "moz-extension://faffce96-b898-4e52-b1c8-df067ac9431b",
+            "evalWorks": false,
+            "inlineWorks": false,
+            "parentAccess": true,
+            "hasBrowserApi": true,
+            "sandboxed": "cookie readable",
+            "at": 1174
+          }
+        },
+        {
+          "ok": true,
+          "what": "v3: the inline <script> of its nested srcdoc is refused"
+        }
+      ],
+      "cspLog": [
+        "sidebar:preview: Content-Security-Policy: The page’s settings blocked an inline script (script-src-elem) from being executed because it violates the following directive: “script",
+        "sidebar:preview: Content-Security-Policy: The page’s settings blocked an inline script (script-src-elem) from being executed because it violates the following directive: “script",
+        "sidebar:preview: Content-Security-Policy: The page’s settings blocked a JavaScript eval (script-src) from being executed because it violates the following directive: “script-src",
+        "sidebar:preview: Content-Security-Policy: The page’s settings blocked an inline script (script-src-elem) from being executed because it violates the following directive: “script",
+        "sidebar:preview: Content-Security-Policy: The page’s settings blocked an inline script (script-src-elem) from being executed because it violates the following directive: “script"
+      ]
+    },
+    "tab": {
+      "loads": [
+        {
+          "kind": "cold",
+          "wasmStarted": 348,
+          "firstDom": 348,
+          "firstFrame": 369,
+          "fcp": 366,
+          "loadEvent": 206
+        },
+        {
+          "kind": "reload",
+          "wasmStarted": 101,
+          "firstDom": 101,
+          "firstFrame": 113,
+          "fcp": 106,
+          "loadEvent": 49
+        },
+        {
+          "kind": "reload",
+          "wasmStarted": 81,
+          "firstDom": 81,
+          "firstFrame": 87,
+          "fcp": 86,
+          "loadEvent": 30
+        },
+        {
+          "kind": "reload",
+          "wasmStarted": 96,
+          "firstDom": 96,
+          "firstFrame": 111,
+          "fcp": 102,
+          "loadEvent": 32
+        },
+        {
+          "kind": "reload",
+          "wasmStarted": 82,
+          "firstDom": 82,
+          "firstFrame": 95,
+          "fcp": 87,
+          "loadEvent": 19
+        },
+        {
+          "kind": "reload",
+          "wasmStarted": 91,
+          "firstDom": 91,
+          "firstFrame": 108,
+          "fcp": 95,
+          "loadEvent": 41
+        }
+      ],
+      "summary": {
+        "cold": {
+          "kind": "cold",
+          "wasmStarted": 348,
+          "firstDom": 348,
+          "firstFrame": 369,
+          "fcp": 366,
+          "loadEvent": 206
+        },
+        "reloadMedian": {
+          "wasmStarted": 91,
+          "firstDom": 91,
+          "firstFrame": 108,
+          "fcp": 95
+        }
+      },
+      "resources": [],
+      "control": {
+        "inline": "blocked",
+        "eval": "blocked:EvalError: call to eval() blocked by CSP",
+        "newFunction": "blocked:EvalError: call to Function() blocked by CSP",
+        "wasm": "ran:function"
+      },
+      "controlViolations": [
+        "script-src-elem:inline",
+        "script-src-elem:inline",
+        "script-src:eval",
+        "script-src:eval",
+        "script-src:eval",
+        "script-src:eval"
+      ],
+      "dom": {
+        "threads": 5,
+        "messages": 4,
+        "table": true,
+        "codeBlock": true,
+        "rawScriptAsText": true,
+        "scriptElementsInMessage": 0,
+        "section": true,
+        "dialog": true,
+        "bodyBg": "rgb(22, 25, 28)",
+        "accent": "#3DAEE9",
+        "width": 320,
+        "height": 720,
+        "overflowX": false
+      },
+      "frameMessages": [
+        {
+          "kind": "v2-page",
+          "origin": "moz-extension://faffce96-b898-4e52-b1c8-df067ac9431b",
+          "windowOrigin": "null",
+          "evalWorks": false,
+          "inlineWorks": true,
+          "parentAccess": false,
+          "hasBrowserApi": false,
+          "sandboxed": "cookie: SecurityError",
+          "at": 186
+        },
+        {
+          "kind": "v2b-page",
+          "origin": "moz-extension://faffce96-b898-4e52-b1c8-df067ac9431b",
+          "windowOrigin": "null",
+          "evalWorks": true,
+          "inlineWorks": true,
+          "parentAccess": false,
+          "hasBrowserApi": false,
+          "sandboxed": "cookie: SecurityError",
+          "at": 186
+        },
+        {
+          "kind": "v3-page",
+          "origin": "moz-extension://faffce96-b898-4e52-b1c8-df067ac9431b",
+          "windowOrigin": "moz-extension://faffce96-b898-4e52-b1c8-df067ac9431b",
+          "evalWorks": false,
+          "inlineWorks": false,
+          "parentAccess": true,
+          "hasBrowserApi": true,
+          "sandboxed": "cookie readable",
+          "at": 186
+        },
+        {
+          "kind": "v3b-page",
+          "origin": "moz-extension://faffce96-b898-4e52-b1c8-df067ac9431b",
+          "windowOrigin": "null",
+          "evalWorks": true,
+          "inlineWorks": true,
+          "parentAccess": false,
+          "hasBrowserApi": false,
+          "sandboxed": "cookie: SecurityError",
+          "at": 190
+        },
+        {
+          "kind": "v2-nested",
+          "scriptRan": true,
+          "origin": "null",
+          "at": 214
+        },
+        {
+          "kind": "v2b-nested",
+          "scriptRan": true,
+          "origin": "null",
+          "at": 215
+        },
+        {
+          "kind": "v3b-nested",
+          "scriptRan": true,
+          "origin": "null",
+          "at": 219
+        }
+      ],
+      "frames": [
+        {
+          "depth": 1,
+          "url": "about:srcdoc",
+          "origin": "null",
+          "out": "script: not run",
+          "boxBg": "rgb(200, 30, 30)"
+        },
+        {
+          "depth": 1,
+          "url": "moz-extension://UUID/preview.html#v2",
+          "origin": "moz-extension://faffce96-b898-4e52-b1c8-df067ac9431b",
+          "boxBg": null
+        },
+        {
+          "depth": 2,
+          "url": "about:srcdoc",
+          "origin": "null",
+          "out": "script: ran inline",
+          "boxBg": "rgb(200, 30, 30)"
+        },
+        {
+          "depth": 1,
+          "url": "moz-extension://UUID/preview.html#v2b",
+          "origin": "moz-extension://faffce96-b898-4e52-b1c8-df067ac9431b",
+          "boxBg": null
+        },
+        {
+          "depth": 2,
+          "url": "about:srcdoc",
+          "origin": "null",
+          "out": "script: ran inline",
+          "boxBg": "rgb(200, 30, 30)"
+        },
+        {
+          "depth": 1,
+          "url": "moz-extension://UUID/plain.html#v3",
+          "origin": "moz-extension://faffce96-b898-4e52-b1c8-df067ac9431b",
+          "boxBg": null
+        },
+        {
+          "depth": 2,
+          "url": "about:srcdoc",
+          "origin": "null",
+          "out": "script: not run",
+          "boxBg": "rgb(200, 30, 30)"
+        },
+        {
+          "depth": 1,
+          "url": "moz-extension://UUID/plain.html#v3b",
+          "origin": "moz-extension://faffce96-b898-4e52-b1c8-df067ac9431b",
+          "boxBg": null
+        },
+        {
+          "depth": 2,
+          "url": "about:srcdoc",
+          "origin": "null",
+          "out": "script: ran inline",
+          "boxBg": "rgb(200, 30, 30)"
+        }
+      ],
+      "checks": [
+        {
+          "ok": true,
+          "what": "no CSP violation on a normal load (page's securitypolicyviolation events)",
+          "extra": []
+        },
+        {
+          "ok": true,
+          "what": "no script error on a normal load",
+          "extra": []
+        },
+        {
+          "ok": true,
+          "what": "page origin is the extension's"
+        },
+        {
+          "ok": true,
+          "what": "no CSP message in Firefox's console during the loads (log.entryAdded)"
+        },
+        {
+          "ok": true,
+          "what": "negative control: an inline script, eval() and new Function() are refused",
+          "extra": {
+            "inline": "blocked",
+            "eval": "blocked:EvalError: call to eval() blocked by CSP",
+            "newFunction": "blocked:EvalError: call to Function() blocked by CSP",
+            "wasm": "ran:function"
+          }
+        },
+        {
+          "ok": true,
+          "what": "WebAssembly is available ('wasm-unsafe-eval')"
+        },
+        {
+          "ok": true,
+          "what": "thread list and four messages rendered, markdown with table and code block",
+          "extra": {
+            "threads": 5,
+            "messages": 4,
+            "table": true,
+            "codeBlock": true,
+            "rawScriptAsText": true,
+            "scriptElementsInMessage": 0,
+            "section": true,
+            "dialog": true,
+            "bodyBg": "rgb(22, 25, 28)",
+            "accent": "#3DAEE9",
+            "width": 320,
+            "height": 720,
+            "overflowX": false
+          }
+        },
+        {
+          "ok": true,
+          "what": "raw HTML in a message is text, not an element"
+        },
+        {
+          "ok": true,
+          "what": "kit Section and Modal are in the DOM"
+        },
+        {
+          "ok": true,
+          "what": "kit.css tokens applied (--bg0, --accent)",
+          "extra": {
+            "bg": "rgb(22, 25, 28)",
+            "accent": "#3DAEE9"
+          }
+        },
+        {
+          "ok": true,
+          "what": "320 px wide, no horizontal overflow",
+          "extra": {
+            "width": 320
+          }
+        },
+        {
+          "ok": true,
+          "what": "kit Modal opens (<dialog> showModal) in the extension page"
+        },
+        {
+          "ok": true,
+          "what": "V1 srcdoc frame in the sidebar page: its inline <script> is refused (the frame inherits the page's CSP)"
+        },
+        {
+          "ok": true,
+          "what": "v2: the page in sandbox.pages runs with an opaque origin, no access to the sidebar and no browser API",
+          "extra": {
+            "kind": "v2-page",
+            "origin": "moz-extension://faffce96-b898-4e52-b1c8-df067ac9431b",
+            "windowOrigin": "null",
+            "evalWorks": false,
+            "inlineWorks": true,
+            "parentAccess": false,
+            "hasBrowserApi": false,
+            "sandboxed": "cookie: SecurityError",
+            "at": 186
+          }
+        },
+        {
+          "ok": true,
+          "what": "v2: the HTML in its nested srcdoc frame ran its inline <script>",
+          "extra": {
+            "kind": "v2-nested",
+            "scriptRan": true,
+            "origin": "null",
+            "at": 214
+          }
+        },
+        {
+          "ok": true,
+          "what": "v2b: the page in sandbox.pages runs with an opaque origin, no access to the sidebar and no browser API",
+          "extra": {
+            "kind": "v2b-page",
+            "origin": "moz-extension://faffce96-b898-4e52-b1c8-df067ac9431b",
+            "windowOrigin": "null",
+            "evalWorks": true,
+            "inlineWorks": true,
+            "parentAccess": false,
+            "hasBrowserApi": false,
+            "sandboxed": "cookie: SecurityError",
+            "at": 186
+          }
+        },
+        {
+          "ok": true,
+          "what": "v2b: the HTML in its nested srcdoc frame ran its inline <script>",
+          "extra": {
+            "kind": "v2b-nested",
+            "scriptRan": true,
+            "origin": "null",
+            "at": 215
+          }
+        },
+        {
+          "ok": true,
+          "what": "v2: the manifest's sandbox CSP is the page's policy (inline allowed, eval refused)",
+          "extra": {
+            "inline": true,
+            "eval": false
+          }
+        },
+        {
+          "ok": true,
+          "what": "v2b (observed, Firefox 159): with the iframe's sandbox attribute the page's CSP is not applied (eval runs although the sandbox CSP refuses it)",
+          "extra": {
+            "eval": true
+          }
+        },
+        {
+          "ok": true,
+          "what": "v3b (observed, Firefox 159): an ordinary extension page (not in sandbox.pages) in an iframe with the sandbox attribute is opaque, has no browser API and no CSP",
+          "extra": {
+            "kind": "v3b-page",
+            "origin": "moz-extension://faffce96-b898-4e52-b1c8-df067ac9431b",
+            "windowOrigin": "null",
+            "evalWorks": true,
+            "inlineWorks": true,
+            "parentAccess": false,
+            "hasBrowserApi": false,
+            "sandboxed": "cookie: SecurityError",
+            "at": 190
+          }
+        },
+        {
+          "ok": true,
+          "what": "v3 (control, not in sandbox.pages): an ordinary extension page: own origin, the sidebar within reach, browser API, eval refused",
+          "extra": {
+            "kind": "v3-page",
+            "origin": "moz-extension://faffce96-b898-4e52-b1c8-df067ac9431b",
+            "windowOrigin": "moz-extension://faffce96-b898-4e52-b1c8-df067ac9431b",
+            "evalWorks": false,
+            "inlineWorks": false,
+            "parentAccess": true,
+            "hasBrowserApi": true,
+            "sandboxed": "cookie readable",
+            "at": 186
+          }
+        },
+        {
+          "ok": true,
+          "what": "v3: the inline <script> of its nested srcdoc is refused"
+        },
+        {
+          "ok": true,
+          "what": "all five srcdoc frames render the HTML and its inline <style>",
+          "extra": [
+            "script: not run",
+            "script: ran inline",
+            "script: ran inline",
+            "script: not run",
+            "script: ran inline"
+          ]
+        }
+      ],
+      "cspLog": [
+        "tab:preview: Content-Security-Policy: The page’s settings blocked an inline script (script-src-elem) from being executed because it violates the following directive: “script",
+        "tab:preview: Content-Security-Policy: The page’s settings blocked an inline script (script-src-elem) from being executed because it violates the following directive: “script",
+        "tab:preview: Content-Security-Policy: The page’s settings blocked a JavaScript eval (script-src) from being executed because it violates the following directive: “script-src",
+        "tab:preview: Content-Security-Policy: The page’s settings blocked an inline script (script-src-elem) from being executed because it violates the following directive: “script",
+        "tab:preview: Content-Security-Policy: The page’s settings blocked an inline script (script-src-elem) from being executed because it violates the following directive: “script"
+      ]
+    }
+  },
+  "installMs": 554,
+  "manifest": {
+    "mv": 3,
+    "csp": {
+      "extension_pages": "script-src 'self' 'wasm-unsafe-eval'",
+      "sandbox": "sandbox allow-scripts allow-forms allow-popups allow-modals allow-pointer-lock; script-src 'self' 'unsafe-inline'"
+    },
+    "panel": "moz-extension://faffce96-b898-4e52-b1c8-df067ac9431b/index.html",
+    "sandboxPages": [
+      "preview.html"
+    ],
+    "warnings": []
+  }
+}

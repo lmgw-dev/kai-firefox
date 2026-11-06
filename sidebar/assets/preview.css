@@ -1,0 +1,3 @@
+/* The preview page: the previewed page fills it. */
+html, body { margin: 0; height: 100%; background: #fff; }
+iframe { display: block; border: 0; width: 100%; height: 100%; }

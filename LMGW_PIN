@@ -1,0 +1,15 @@
+# The lmgw source the sidebar page (sidebar/, design §8.2, §10) is built against: lmgw-chat-ui,
+# lmgw-ui-kit, lmgw-api-types and lmgw-client, plus lmgw-ui's base stylesheet and its fonts. Three
+# lines that name the same source, as in Kai's LMGW_PIN:
+#   lmgw_commit  the commit in lmgw's development history: the checkout next to this repository
+#                locally, GitLab CI's clone
+#   lmgw_tag     the published lmgw release (github.com/lmgw-dev/lmgw) whose tree is lmgw_tree, which
+#                the GitHub release workflow clones, or `unpublished` while no release has that tree
+#                yet (the workflow then fails and says so)
+#   lmgw_tree    the commit's tree: the public repository gets one squashed commit per publish, with
+#                other commit hashes but the same tree, so the tree is what every build stages from
+# `scripts/lmgw-pin.sh stage` copies the crates out of the pinned tree (git archive) into
+# target/lmgw-pin/, where sidebar/Cargo.toml finds them; the checkout itself is only read.
+lmgw_commit a244ad8af5e0e5c1a5a946774bd824ffc5098126
+lmgw_tag v0.6.0
+lmgw_tree b5aecd10d2e28d85a3388600f75550b2a4d598c5

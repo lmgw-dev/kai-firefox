@@ -1,0 +1,50 @@
+[package]
+name = "kai-firefox-sidebar"
+version = "0.1.0"
+edition = "2024"
+description = "Kai for Firefox's sidebar page: lmgw's Chat (lmgw-chat-ui) with its requests relayed through the extension's background to Kai (design §8)"
+license = "MIT"
+publish = false
+
+# Its own workspace: the page is wasm, built by `trunk build` (scripts/sidebar.sh). Natively,
+# `cargo test` runs the wire's tests (src/wire.rs), which need no browser.
+[workspace]
+
+[lib]
+path = "src/lib.rs"
+
+[[bin]]
+name = "kai-firefox-sidebar"
+path = "src/main.rs"
+
+[dependencies]
+# lmgw's Chat and its kit, from the tree LMGW_PIN names: scripts/lmgw-pin.sh stage copies them out
+# of lmgw's checkout (git archive) to target/lmgw-pin/ at the repository's root, never this
+# directory, so one committed path holds in the main checkout, a worktree and CI.
+lmgw-chat-ui = { path = "../target/lmgw-pin/crates/lmgw-chat-ui" }
+lmgw-ui-kit = { path = "../target/lmgw-pin/crates/lmgw-ui-kit" }
+# Same leptos minor as the Chat.
+leptos = { version = "0.8", features = ["csr"] }
+console_error_panic_hook = "0.1"
+base64 = "0.22"
+futures = "0.3"
+js-sys = "0.3"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+wasm-bindgen = "0.2"
+wasm-bindgen-futures = "0.4"
+web-sys = { version = "0.3", features = [
+  "AbortSignal", "Blob", "Document", "Element", "Event", "EventTarget", "HtmlElement",
+  "MediaQueryList", "Window",
+] }
+
+# As the dashboard's and Kai's pages: trunk builds the release profile, wasm-opt does the rest.
+[profile.release]
+opt-level = "s"
+lto = true
+codegen-units = 1
+strip = true
+
+# The debug `trunk build` (the dev loop): no DWARF for the page (trunk strips it from dist/ anyway).
+[profile.dev]
+debug = false

@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Northwind Gear: lamps and tents</title>
+<style>
+  body { font: 16px/1.5 sans-serif; margin: 0; }
+  header, main, footer { padding: 0 24px; }
+  .product { height: 320px; border-bottom: 1px solid #ccc; }
+  iframe { width: 600px; height: 160px; border: 1px solid #888; }
+</style>
+</head>
+<body>
+<header>
+  <p id="logo">Northwind Gear, shop.example</p>
+  <nav aria-label="Main">
+    <a href="shop.html">Shop</a>
+    <a href="article.html">Journal</a>
+    <a href="help.html">Help</a>
+  </nav>
+  <form role="search" action="/search">
+    <label for="q">Search the shop</label>
+    <input id="q" name="q" type="search">
+    <button type="submit">Search</button>
+  </form>
+</header>
+<main>
+  <h1>Lamps and tents</h1>
+  <p>Gear for long evenings outside.</p>
+  <iframe id="consent" title="Cookie consent" src="about:blank"></iframe>
+  <section class="product" id="p1">
+    <h2>Trail Lamp</h2>
+    <p>A lamp for the trail. <span id="price1">29 €</span></p>
+    <button id="buy1">Add Trail Lamp to cart</button>
+  </section>
+  <section class="product" id="p2">
+    <h2>Ridge Tent</h2>
+    <p>Two people, three seasons.</p>
+    <button id="buy2">Add Ridge Tent to cart</button>
+  </section>
+  <section class="product" id="p3">
+    <h2>Camp Stove</h2>
+    <p>Boils a litre in four minutes.</p>
+    <shadow-buy id="buy3" label="Add Camp Stove to cart"></shadow-buy>
+  </section>
+  <section class="product" id="p4">
+    <h2>Pocket Knife</h2>
+    <p>Eleven tools, one blade.</p>
+    <button id="buy4">Add Pocket Knife to cart</button>
+  </section>
+</main>
+<footer><p>Northwind Gear, 198.51.100.7 is our test address.</p></footer>
+<dialog id="confirm" aria-labelledby="confirm-title">
+  <h2 id="confirm-title">Remove the Trail Lamp?</h2>
+  <button id="confirm-yes">Remove</button>
+  <button id="confirm-no">Keep it</button>
+  <dialog id="confirm-more" aria-label="Remove all lamps?">
+    <button id="more-yes">Remove all</button>
+  </dialog>
+</dialog>
+<script src="shop.js"></script>
+</body>
+</html>

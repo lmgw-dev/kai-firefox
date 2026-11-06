@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Pane</title>
+<style>
+  html, body { margin: 0; background: #ffffff; }
+  #yellow { position: absolute; left: 20px; top: 30px; width: 100px; height: 50px; margin: 0; background: #ffff00; color: #ffff00; font: 14px/1 sans-serif; }
+  iframe { position: absolute; left: 160px; top: 110px; width: 100px; height: 60px; border: 0; }
+</style>
+</head>
+<body>
+<p id="yellow">Yellow box</p>
+<iframe id="inner" title="Inner pane"></iframe>
+<script>
+  // A frame of the top page's origin (127.0.0.1) inside this one (localhost).
+  document.getElementById("inner").src = `http://127.0.0.1:${location.port}/see-inner.html`;
+</script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+# Built into dist/, which is the extension root (manifest.json is copied in by index.html).
+# Asset URLs are relative: the page is moz-extension://<uuid>/index.html.
+[build]
+target = "index.html"
+dist = "dist"
+public_url = "./"
+
+# Trunk 0.21 has no option for its loader other than the inline module script, which the extension
+# CSP refuses: this hook moves it into init.js (see the script).
+[[hooks]]
+stage = "post_build"
+command = "node"
+command_arguments = ["scripts/externalize-inline.mjs"]

@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Checkout: Northwind Gear</title></head>
+<body>
+<h1>Checkout</h1>
+<!-- Named like the content script's load guard; the content script loads all the same. -->
+<iframe name="kaiFirefoxContent" title="Guard name" src="about:blank" hidden></iframe>
+<form>
+  <p><label id="card-label">Card number <input id="card" autocomplete="cc-number" value="4111 1111 1111 1111"></label></p>
+  <p><button type="button" id="card-check" aria-labelledby="card-label">Check</button></p>
+  <p><label for="otp">One-time code</label> <input id="otp" autocomplete="one-time-code" value="902614"></p>
+  <p><span id="otp-hint">Code sent: <input id="otp-copy" autocomplete="one-time-code" value="902614"></span></p>
+  <p><button type="button" id="otp-send" aria-labelledby="otp-hint">Send</button></p>
+  <p>New password: <input id="new-pw" autocomplete="new-password" value="example-secret-2"></p>
+  <p><input id="echo" aria-labelledby="new-pw"></p>
+  <div role="button" tabindex="0" id="card-box">Pay with <input id="card2" autocomplete="billing cc-number" value="5500 0000 0000 0004"></div>
+  <p><label for="card3">Gift card</label> <input id="card3" autocomplete="CC-Number" value="6011 0000 0000 0004"></p>
+  <p><label for="csc">Security code</label> <input id="csc" type="number" autocomplete="cc-csc" value="737"></p>
+</form>
+</body>
+</html>

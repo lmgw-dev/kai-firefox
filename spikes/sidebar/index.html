@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <title>Kai</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Measurement hooks and the CSP-violation log; an external file, the page allows no inline script. -->
+  <script data-trunk src="assets/probe.js" data-no-minify></script>
+  <!-- The shared kit's tokens and widget rules, then the sidebar's own. -->
+  <link data-trunk rel="css" href=".lmgw/crates/lmgw-ui-kit/assets/kit.css">
+  <link data-trunk rel="css" href="assets/sidebar.css">
+  <!-- The extension's files, copied into dist/ (the extension root). -->
+  <link data-trunk rel="copy-file" href="extension/manifest.json">
+  <link data-trunk rel="copy-file" href="extension/icon.svg">
+  <link data-trunk rel="copy-file" href="extension/preview.html">
+  <link data-trunk rel="copy-file" href="extension/preview.js">
+  <link data-trunk rel="copy-file" href="extension/plain.html">
+  <link data-trunk rel="rust" data-wasm-opt="z" data-wasm-opt-params="--enable-bulk-memory --enable-nontrapping-float-to-int" data-no-demangle data-integrity="none">
+</head>
+<body></body>
+</html>

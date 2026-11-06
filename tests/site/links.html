@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Your orders: Northwind Gear</title></head>
+<body>
+<h1>Your orders</h1>
+<!-- Links that load a page by GET, but may commit by script first (design §6.4, item 30 as
+     narrowed): the commit guard's words keep applying where the extension can see it. -->
+<ul>
+  <li><a href="/orders/42" id="cancel">Cancel order</a> (its handler calls preventDefault and sends a beacon)</li>
+  <li><a href="/item/5" data-turbo-method="delete">Delete the lamp</a></li>
+  <li><a href="/item/6" hx-post="/api/remove-bag">Remove the bag</a></li>
+  <li><a href="/item/7" onclick="return false">Remove the tent</a></li>
+  <li><a href="/item/8" v-on:click="drop">Remove the stove</a></li>
+  <li><a href="/account/plan" id="plan">Remove the plan</a></li>
+  <li id="row"><a href="/item/9">Remove the strap</a></li>
+  <li><a href="/item/10" id="hook">Remove the hook</a></li>
+</ul>
+<p id="said">nothing yet</p>
+<script>
+  const said = (t) => (document.getElementById("said").textContent = t);
+  const beacon = (path, body) => (e) => {
+    e.preventDefault();
+    navigator.sendBeacon(path, body);
+    said(body);
+  };
+  document.getElementById("cancel").addEventListener("click", beacon("/api/cancel", "order=42"));
+  document.getElementById("hook").addEventListener("click", beacon("/api/remove", "item=10"));
+  // Handlers set as properties: on the link, and on an ancestor of one.
+  document.getElementById("plan").onclick = beacon("/api/plan", "plan=basic");
+  document.getElementById("row").onclick = beacon("/api/strap", "item=9");
+</script>
+</body>
+</html>

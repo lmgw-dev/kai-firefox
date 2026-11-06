@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Late changes: Northwind Gear</title></head>
+<body>
+<h1>Pages that change under a press</h1>
+<!-- Page code that runs between the guard's first look and the click: a button renamed on
+     pointerdown (in a microtask, as React 18 commits), one replaced by a new one, a form whose
+     action changes. -->
+<p><button id="rename">Add to list</button> <span id="renamed">not clicked</span></p>
+<p><button id="bold" aria-pressed="false">Bold</button></p>
+<p id="swap-box"><button id="swap">Save</button> <span id="swapped">no click</span></p>
+<form id="keep" action="/note" method="post">
+  <input type="hidden" name="note" value="trail lamp">
+  <p><button id="keep-btn">Keep</button></p>
+</form>
+<!-- A chat box outside a form whose own script sends on Enter, and a form whose submit button
+     carries the word. -->
+<div><span id="msg-label">Message</span> <div id="msg" contenteditable="true" role="textbox" aria-labelledby="msg-label"></div></div>
+<p id="chat">nothing sent</p>
+<form id="place" action="/step-two" method="post">
+  <p><label for="gift">Gift note</label> <input id="gift" name="gift"></p>
+  <p><button id="place-btn">Place order</button></p>
+</form>
+<h2>Labels</h2>
+<p>
+  <button>Jetzt kaufen</button>
+  <button>Zahlungspflichtig bestellen</button>
+  <button id="shy">Be&shy;stel&shy;len</button>
+  <button>Ｂｕｙ</button>
+  <button aria-label="Close">Delete everything</button>
+  <button title="Remove item">✕</button>
+  <button>In den Einkaufswagen</button>
+  <button>Abonnieren</button>
+  <button>Weiter</button>
+</p>
+<script>
+  const $ = (id) => document.getElementById(id);
+  $("rename").addEventListener("pointerdown", () => queueMicrotask(() => ($("rename").textContent = "Buy now")));
+  $("rename").addEventListener("click", () => ($("renamed").textContent = "clicked"));
+  $("bold").addEventListener("click", () => $("bold").setAttribute("aria-pressed", String($("bold").getAttribute("aria-pressed") !== "true")));
+  $("swap").addEventListener("pointerdown", () => {
+    const b = document.createElement("button");
+    b.id = "swap";
+    b.textContent = "Save";
+    b.addEventListener("click", () => ($("swapped").textContent = "the new button was clicked"));
+    $("swap").replaceWith(b);
+  });
+  $("keep-btn").addEventListener("pointerdown", () => $("keep").setAttribute("action", "/account/delete"));
+  $("msg").addEventListener("keydown", (e) => {
+    if (e.key !== "Enter") return;
+    e.preventDefault();
+    $("chat").textContent = `sent: ${$("msg").textContent}`;
+  });
+</script>
+</body>
+</html>

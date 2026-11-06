@@ -1,0 +1,21 @@
+{
+  "name": "kai-firefox-spike-ext",
+  "private": true,
+  "type": "module",
+  "description": "WP0 spike (a, b, e, f; d prepared): MV3 background + native port, userScripts, native manifest lookup, element naming cost",
+  "scripts": {
+    "build": "node build.mjs",
+    "a:keepalive": "node run-a.mjs keepalive",
+    "a:sizes": "node run-a.mjs sizes",
+    "a:lifecycle": "node run-a.mjs lifecycle --mode stubborn && node run-a.mjs lifecycle --mode eof-exit",
+    "b": "node run-b.mjs",
+    "e": "node run-e.mjs",
+    "f": "node build.mjs && node run-f.mjs",
+    "d:dry": "./atspi-check.sh --dry-run",
+    "d:selftest": "./atspi-selftest.sh --variants baseline,default,force,env"
+  },
+  "devDependencies": {
+    "dom-accessibility-api": "0.7.1",
+    "esbuild": "^0.28.2"
+  }
+}

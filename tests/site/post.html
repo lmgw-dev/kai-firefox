@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Draft: Northwind Gear</title></head>
+<body>
+<h1>Your draft</h1>
+<p><label for="draft">Draft</label> <textarea id="draft">Three nights in the hills</textarea></p>
+<p><label for="secret">Password</label> <input id="secret" type="password" value="example-secret-9"></p>
+<p>
+  <button id="save">Save draft</button>
+  <button id="ping">Ping</button>
+  <button id="upload">Upload</button>
+  <button id="later">Save later</button>
+  <button id="load">Load</button>
+</p>
+<p>
+  <button id="signin">Sign in</button>
+  <button id="busy">Save and think</button>
+  <button id="worker">Save in a worker</button>
+</p>
+<form id="moved" action="/r307?to=/moved-here" method="post">
+  <input type="hidden" name="note" value="lamp">
+  <p><button>Save, moved</button></p>
+</form>
+<p><a id="guide">Read the guide</a> <a href="help.html">Help</a></p>
+<p id="status">idle</p>
+<script>
+  // Each button writes the way pages do: fetch with JSON, a beacon, a binary PUT, a POST after
+  // a while (outside the guard's window), and a GET (never held).
+  const $ = (id) => document.getElementById(id);
+  const status = (s) => ($("status").textContent = s);
+  const done = (what) => (r) => status(`${what} ${r.status}`);
+  const failed = (what) => () => status(`${what} failed`);
+  $("save").addEventListener("click", () => {
+    fetch("/api/draft", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ text: $("draft").value, password: $("secret").value }) }).then(done("saved"), failed("save"));
+  });
+  $("ping").addEventListener("click", () => status(navigator.sendBeacon("/api/ping", "seen=1") ? "pinged" : "ping refused"));
+  $("upload").addEventListener("click", () => fetch("/api/blob", { method: "PUT", body: new Uint8Array([0, 159, 146, 150, 255]) }).then(done("uploaded"), failed("upload")));
+  $("later").addEventListener("click", () => setTimeout(() => fetch("/api/later", { method: "POST", body: "late=1" }).then(done("saved later"), failed("later")), 1500));
+  $("load").addEventListener("click", () => fetch("/api/draft").then(done("loaded"), failed("load")));
+  // Sign in clears the password field before it sends what it held.
+  $("signin").addEventListener("click", () => {
+    const password = $("secret").value;
+    $("secret").value = "";
+    fetch(`/api/login?check=${encodeURIComponent(password)}`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ user: "ada", password }) }).then(done("signed in"), failed("sign in"));
+  });
+  // A save whose page then keeps its thread busy, so it cannot answer the extension for a while.
+  $("busy").addEventListener("click", () => {
+    setTimeout(() => {
+      fetch(`/api/busy?key=${encodeURIComponent($("secret").value)}`, { method: "POST", body: "x=1" }).then(done("thought"), failed("think"));
+      const t = Date.now();
+      while (Date.now() - t < 2500);
+    }, 300);
+  });
+  $("worker").addEventListener("click", () => {
+    const w = new Worker("worker.js");
+    w.onmessage = (e) => status(e.data);
+  });
+  // A guide on an origin only Kai's tests visit, the draft in its address.
+  $("guide").href = `http://127.0.0.3:${location.port}/help.html?draft=${encodeURIComponent($("draft").value)}`;
+</script>
+</body>
+</html>

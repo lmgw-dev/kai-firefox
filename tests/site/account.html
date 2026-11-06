@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Account: Northwind Gear</title>
+<style>body { font: 14px/1.4 sans-serif; } p { margin: 4px 0; }</style></head>
+<body>
+<h1>Your account</h1>
+<form id="account" aria-label="Account" action="/search">
+  <p><label for="name">Full name</label> <input id="name" value="Ada Example" required></p>
+  <p><label for="mail">E-mail</label> <input id="mail" type="email" value="ada@shop" aria-invalid="true" aria-errormessage="mail-error" aria-describedby="mail-help">
+    <span id="mail-help">We send receipts here.</span> <span id="mail-error">Enter an address like ada@shop.example.</span></p>
+  <p><label for="nick">Shown name</label> <input id="nick" aria-label="Nickname" value="ada"></p>
+  <p><label for="pw2">Password</label> <input id="pw2" type="password" value="example-secret-3"></p>
+  <fieldset><legend>Delivery</legend>
+    <label><input type="radio" name="ship" value="std" checked> Standard</label>
+    <label><input type="radio" name="ship" value="exp"> Express</label>
+  </fieldset>
+  <p><label><input type="checkbox" id="news" checked> Newsletter</label> <label><input type="checkbox" id="mixed"> All topics</label></p>
+  <p><label for="country">Country</label> <select id="country"><option>Germany</option><option selected>Austria</option></select></p>
+  <p><label for="qty">Lamps</label> <input id="qty" type="range" min="0" max="10" value="3"></p>
+  <p><span id="vol-label">Volume</span> <span role="slider" tabindex="0" aria-labelledby="vol-label" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" aria-valuetext="40 percent">||||</span></p>
+  <p><span role="switch" tabindex="0" aria-checked="true" aria-label="Dark mode">on</span></p>
+  <p><label for="code">Voucher</label> <input id="code" value="NW-2026" disabled></p>
+  <p><label for="since">Customer since</label> <input id="since" value="2024" readonly></p>
+  <div id="notes" contenteditable="true" role="textbox" aria-label="Notes">Leave at the door.</div>
+  <p><button type="button" id="more" aria-expanded="false">More options</button> <button type="button" id="bold" aria-pressed="true">Bold</button></p>
+  <section inert><p><button type="button" id="inert-btn">Behind inert</button></p></section>
+  <p><button type="submit">Save</button> <a href="help.html" role="button">Help</a></p>
+</form>
+<shadow-field id="sf"></shadow-field>
+<div role="dialog" aria-modal="true" aria-labelledby="dlg-title" id="dlg" hidden>
+  <h2 id="dlg-title">Leave without saving?</h2>
+  <button type="button" id="dlg-leave">Leave</button> <button type="button" id="dlg-stay">Stay</button>
+</div>
+<script>
+  document.getElementById("mixed").indeterminate = true;
+  // An input in an open shadow root, labelled inside it.
+  customElements.define("shadow-field", class extends HTMLElement {
+    connectedCallback() {
+      const root = this.attachShadow({ mode: "open" });
+      const label = document.createElement("label");
+      label.htmlFor = "z";
+      label.textContent = "Postcode";
+      const input = document.createElement("input");
+      input.id = "z";
+      input.value = "10115";
+      root.append(label, " ", input);
+    }
+  });
+</script>
+</body>
+</html>

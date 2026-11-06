@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Your account: Northwind Gear</title>
+<style>
+  body { font: 16px/1.5 sans-serif; margin: 0 24px; }
+  iframe { width: 500px; height: 120px; border: 1px solid #888; }
+  .faded { opacity: 0.8; }
+</style>
+</head>
+<body>
+<h1>Your account</h1>
+<div id="countdown" aria-live="polite" aria-atomic="true">Your session expires in 120 seconds.</div>
+<ul id="log" role="log" aria-label="Messages"><li>Welcome back.</li></ul>
+<div id="alert" role="alert"></div>
+<div id="saved" role="status" hidden>Your changes are saved.</div>
+<form id="profile" onsubmit="return false">
+  <p><label for="email">E-mail</label> <input id="email" aria-errormessage="email-error" aria-describedby="email-hint">
+    <span id="email-hint">We send receipts here.</span> <span id="email-error" hidden></span></p>
+  <p><label for="pw">Password</label> <input id="pw" type="password" value="hunter2-example" aria-errormessage="pw-error">
+    <span id="pw-error"></span></p>
+  <p><label for="zip">Postcode</label> <input id="zip" required pattern="[0-9]{5}"></p>
+  <button id="save">Save</button>
+</form>
+<p><button id="open-help">Open help in a new tab</button> <a id="dl" href="/download?events">Price list</a></p>
+<dialog id="terms" aria-label="Terms of sale"><p>Returns within 30 days.</p><button id="terms-close">Close</button></dialog>
+<div id="cookie" role="dialog" aria-modal="true" aria-label="Cookie settings" hidden><button>Done</button></div>
+<iframe id="partner" title="Partner offers" src="about:blank"></iframe>
+<h2>More</h2>
+<ul id="feed" role="log" aria-label="Feed"><li id="feed-first" class="new">Welcome to the feed.</li><li id="feed-later" hidden>Your parcel arrived.</li></ul>
+<div id="plain-box">Nothing yet.</div>
+<div id="busy" aria-live="polite" aria-atomic="true">Prices as of today.</div>
+<div id="adds" role="log" aria-relevant="additions" aria-label="Additions only"><p id="adds-first">First entry.</p></div>
+<p><label for="code">Promo code</label> <input id="code" aria-errormessage="code-error" aria-invalid="false"> <span id="code-error" role="alert"></span></p>
+<p><label for="phrase">Recovery phrase</label> <input id="phrase" type="password" value="correct horse  battery staple">
+  <button id="show-phrase" type="button">Show</button></p>
+<p><button id="check-stock" type="button">Check stock</button> <span id="stock" role="status"></span></p>
+<p><button id="spot-a">First spot</button> <button id="spot-b">Second spot</button></p>
+<dialog id="outer" aria-label="Order details"><p>Order 1001.</p>
+  <div id="inner" role="dialog" aria-modal="true" aria-label="Confirm removal" hidden><button>Remove</button></div></dialog>
+<div id="ghost" role="dialog" aria-modal="true" aria-label="Ghost panel" style="visibility: hidden"><button>Close</button></div>
+<div id="sheet-box" aria-hidden="true"><div id="sheet" role="modal-sheet alertdialog" aria-modal="true" aria-label="Leave the page?"><button>Stay</button></div></div>
+<div id="shadow-host"></div>
+<fieldset id="tip-box"><legend>Courier tip</legend>
+  <p><label for="tip">Tip</label> <input id="tip" type="range" min="0" max="10" value="0"> <output id="tip-out" for="tip">0</output></p>
+  <p><span id="tip-note" role="status"></span></p>
+</fieldset>
+<script>
+  // The partner frame comes from the other origin (localhost vs 127.0.0.1), on the same port.
+  const other = location.hostname === "127.0.0.1" ? "localhost" : "127.0.0.1";
+  document.getElementById("partner").src = `http://${other}:${location.port}/events-frame.html`;
+  document.getElementById("open-help").addEventListener("click", () => window.open("/help.html"));
+  // The countdown the tests start: `ticks` changes, one every `every` ms; resolves to the last.
+  window.countdown = (ticks, every) =>
+    new Promise((resolve) => {
+      let n = 120;
+      const t = setInterval(() => {
+        n--;
+        document.getElementById("countdown").textContent = `Your session expires in ${n} seconds.`;
+        if (--ticks <= 0) {
+          clearInterval(t);
+          resolve(n);
+        }
+      }, every);
+    });
+  // A chat widget's dialog in a closed shadow root.
+  const shadow = document.getElementById("shadow-host").attachShadow({ mode: "closed" });
+  shadow.innerHTML = `<div id="chat" role="dialog" aria-modal="true" aria-label="Chat with us" hidden><button>Send</button></div>`;
+  window.chatDialog = (open) => (shadow.getElementById("chat").hidden = !open);
+  // "Show" turns the password field into a text field, as many login forms do.
+  document.getElementById("show-phrase").addEventListener("click", () => (document.getElementById("phrase").type = "text"));
+  document.getElementById("check-stock").addEventListener("click", () => (document.getElementById("stock").textContent = "In stock: 4 lamps."));
+  // The focus moved back and forth `n` times in one task, ending on the second spot.
+  window.focusLoop = (n) => {
+    for (let i = 0; i < n; i++) {
+      document.getElementById("spot-a").focus();
+      document.getElementById("spot-b").focus();
+    }
+    return document.activeElement.id;
+  };
+  // The terms dialog opened and closed `n` times, one change per task; resolves when closed.
+  window.toggleLoop = (n) =>
+    new Promise((resolve) => {
+      const d = document.getElementById("terms");
+      let left = 2 * n;
+      const step = () => {
+        if (d.open) d.close();
+        else d.showModal();
+        if (--left > 0) setTimeout(step, 0);
+        else resolve(d.open);
+      };
+      step();
+    });
+  // The first feed entry's class toggled every `every` ms for `ms`.
+  window.churn = (ms, every) =>
+    new Promise((resolve) => {
+      const li = document.getElementById("feed-first");
+      const t0 = performance.now();
+      const t = setInterval(() => {
+        li.classList.toggle("new");
+        if (performance.now() - t0 >= ms) {
+          clearInterval(t);
+          resolve();
+        }
+      }, every);
+    });
+</script>
+</body>
+</html>

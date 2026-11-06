@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <title>Kai</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- lmgw's chat-plane design §8.9: the policy the Chat is checked under, word for word. The
+       manifest's extension_pages policy covers the background too, whose fetches (a PDF's bytes,
+       a screenshot's data: URL) connect-src 'self' would refuse, so it carries §8.9 with a wider
+       connect-src (http:, https:, file:, data:, blob:); this page narrows that to §8.9 (both
+       policies apply), and a page that lost this meta still has the rest of §8.9. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' blob: data:; media-src 'self' blob: data:; font-src 'self' data:; connect-src 'self'; object-src 'none'">
+  <!-- No inline script on this page: it runs only its own files.
+       The theme before first paint, from prefers-color-scheme: a classic script. -->
+  <script data-trunk src="assets/boot.js" data-no-minify></script>
+  <!-- lmgw's chat-plane design §9.8: the kit's tokens and widgets, its profile editor's, the base
+       components (lmgw-ui's app.css until the kit carries them), the Chat's rules, its voice rules
+       (the status line's, which the Chat draws without voice too), then the sidebar's own. -->
+  <link data-trunk rel="css" href="../target/lmgw-pin/crates/lmgw-ui-kit/assets/kit.css">
+  <link data-trunk rel="css" href="../target/lmgw-pin/crates/lmgw-ui-kit/assets/profiles.css">
+  <link data-trunk rel="css" href="../target/lmgw-pin/crates/lmgw-ui/assets/app.css">
+  <link data-trunk rel="css" href="../target/lmgw-pin/crates/lmgw-chat-ui/assets/chat.css">
+  <link data-trunk rel="css" href="../target/lmgw-pin/crates/lmgw-chat-ui/assets/voice.css">
+  <link data-trunk rel="css" href="assets/sidebar.css">
+  <!-- app.css names its fonts as fonts/…, beside it. -->
+  <link data-trunk rel="copy-dir" href="../target/lmgw-pin/crates/lmgw-ui/assets/fonts">
+  <!-- Code blocks: highlight.js, KaTeX, Mermaid and DOMPurify, imported from vendor/ beside it. -->
+  <link data-trunk rel="copy-dir" href="../target/lmgw-pin/crates/lmgw-chat-ui/assets/vendor">
+  <script data-trunk src="../target/lmgw-pin/crates/lmgw-chat-ui/assets/codeblocks.js" type="module" data-no-minify></script>
+  <!-- The HTML preview's page, listed in the manifest's sandbox.pages (design §8.2 item 6). -->
+  <link data-trunk rel="copy-file" href="assets/preview.html">
+  <link data-trunk rel="copy-file" href="assets/preview.js">
+  <link data-trunk rel="copy-file" href="assets/preview.css">
+  <!-- The loader as a module file (Trunk.toml's pattern_script). -->
+  <script data-trunk src="assets/start.js" type="module" data-no-minify></script>
+  <link data-trunk rel="rust" data-bin="kai-firefox-sidebar" data-wasm-opt="z" data-wasm-opt-params="--enable-bulk-memory --enable-nontrapping-float-to-int" data-no-demangle>
+</head>
+<body></body>
+</html>

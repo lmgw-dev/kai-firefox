@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Lamp care: Northwind Gear</title></head>
+<body>
+<h1>Lamp care</h1>
+<p>Served cacheable, so Back and Forward restore it from Firefox's back-forward cache.</p>
+<p><a href="cached-b.html">Tent care</a></p>
+<script>
+  // How often the page was shown again from the back-forward cache.
+  window.restored = 0;
+  addEventListener("pageshow", (e) => { if (e.persisted) window.restored++; });
+</script>
+</body>
+</html>

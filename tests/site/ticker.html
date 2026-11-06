@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Live prices: Northwind Gear</title></head>
+<body>
+<h1>Live prices</h1>
+<p id="tick">0</p>
+<script>
+  // Keeps its URL current, as a live page does: a change inside the page every 5 ms.
+  let n = 0;
+  setInterval(() => {
+    n++;
+    document.getElementById("tick").textContent = String(n);
+    history.replaceState(null, "", `?tick=${n}`);
+  }, 5);
+</script>
+</body>
+</html>

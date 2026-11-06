@@ -1,0 +1,36 @@
+[package]
+name = "kai-firefox-spike-sidebar"
+version = "0.0.0"
+edition = "2024"
+description = "WP0 (c): a minimal Leptos sidebar on lmgw's UI kit, packaged as an MV3 Firefox extension"
+license = "MIT"
+publish = false
+
+# Its own workspace, like Kai's settings UI: the page is wasm and built by `trunk build`.
+# `.lmgw` (below) is inside this directory, and cargo would take a path dependency under the
+# workspace root for a member of this workspace: excluded, it keeps lmgw's own workspace.
+[workspace]
+exclude = [".lmgw"]
+
+[dependencies]
+# lmgw's shared UI kit by path, as Kai's `ui/` does. `.lmgw` is a symlink to the sibling lmgw
+# checkout that build.sh makes (gitignored): the relative depth from this crate to lmgw differs
+# between a linked worktree (`<worktree>/spikes/sidebar`) and the main checkout
+# (spikes/sidebar), and a symlink keeps one committed path valid in both.
+lmgw-ui-kit = { path = ".lmgw/crates/lmgw-ui-kit" }
+leptos = { version = "0.8", features = ["csr"] }
+console_error_panic_hook = "0.1"
+# The Chat's markdown renderer (lmgw-ui/src/pages/chat_markdown.rs) uses the same crate and features.
+pulldown-cmark = { version = "0.13", default-features = false, features = ["html"] }
+wasm-bindgen = "0.2"
+web-sys = { version = "0.3", features = ["Window", "Document", "Element", "HtmlElement", "HtmlIFrameElement", "MessageEvent", "Performance", "EventTarget"] }
+
+# As Kai's ui/: trunk builds the release profile; wasm-opt does the rest.
+[profile.release]
+opt-level = "s"
+lto = true
+codegen-units = 1
+strip = true
+
+[profile.dev]
+debug = false

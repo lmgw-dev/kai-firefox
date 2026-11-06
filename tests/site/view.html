@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Views: Northwind Gear</title>
+<style>
+  body { font: 16px/1.5 sans-serif; margin: 0; padding: 8px; }
+  h1 { margin: 0 0 8px; }
+  #wide { width: 4000px; text-align: right; margin: 0; }
+  #pane { margin-top: 250px; height: 120px; width: 400px; overflow: auto; border: 1px solid #999; }
+  #pane p { height: 40px; margin: 0; }
+  #frame { width: 400px; height: 100px; border: 1px solid #888; }
+  #cut { width: 300px; }
+  .gap { height: 1200px; }
+</style></head>
+<body>
+<h1>Views</h1>
+<p id="wide">Off to the right of the view.</p>
+<div id="pane">
+  <p>Pane line 1 <button>Pane button 1</button></p>
+  <p>Pane line 2 <button>Pane button 2</button></p>
+  <p>Pane line 3 <button>Pane button 3</button></p>
+  <p>Pane line 4 <button>Pane button 4</button></p>
+  <p>Pane line 5 <button>Pane button 5</button></p>
+  <p>Pane line 6 <button>Pane button 6</button></p>
+  <p>Pane line 7 <button>Pane button 7</button></p>
+  <p>Pane line 8 <button>Pane button 8</button></p>
+  <p>Pane line 9 <button>Pane button 9</button></p>
+  <p>Pane line 10 <button>Pane button 10</button></p>
+  <p>Pane line 11 <button>Pane button 11</button></p>
+  <p>Pane line 12 <button>Pane button 12</button></p>
+</div>
+<shadow-note></shadow-note>
+<iframe id="frame" title="Other" src="about:blank"></iframe>
+<div class="gap"></div>
+<p id="cut"><span>The first part of a long paragraph,</span> <span>which goes on over several lines</span> <span>and is cut by the top edge</span> <span>of the view when the page is scrolled</span> <span>a little past its first lines.</span></p>
+<div class="gap"></div>
+<script>
+  // Text directly in a closed shadow root.
+  customElements.define("shadow-note", class extends HTMLElement {
+    connectedCallback() {
+      this.attachShadow({ mode: "closed" }).append("Text directly in a shadow root.");
+    }
+  });
+  // The frame comes from the other origin (localhost vs 127.0.0.1), on the same port.
+  const other = location.hostname === "127.0.0.1" ? "localhost" : "127.0.0.1";
+  window.otherOrigin = `http://${other}:${location.port}`;
+  document.getElementById("frame").src = `${window.otherOrigin}/consent.html`;
+  // After the next scroll, keeps the page's thread busy for `ms`, starting right after the content
+  // script asked the background to label the new view: its timer of 150 ms, set by its listener
+  // (capture, at the window) before this one, runs first.
+  window.busyAfterScroll = (ms) => addEventListener("scroll", () => setTimeout(() => { const end = Date.now() + ms; while (Date.now() < end) {} }, 150), { once: true });
+</script>
+</body>
+</html>

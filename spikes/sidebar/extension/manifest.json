@@ -1,0 +1,24 @@
+{
+  "manifest_version": 3,
+  "name": "Kai for Firefox (sidebar spike)",
+  "version": "0.0.1",
+  "description": "WP0 (c): a minimal Leptos sidebar on lmgw's UI kit.",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "kai-firefox-spike-sidebar@rootshell.dev",
+      "strict_min_version": "154.0",
+      "data_collection_permissions": { "required": ["none"] }
+    }
+  },
+  "icons": { "48": "icon.svg", "96": "icon.svg" },
+  "sidebar_action": {
+    "default_title": "Kai",
+    "default_panel": "index.html",
+    "default_icon": "icon.svg"
+  },
+  "sandbox": { "pages": ["preview.html"] },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'",
+    "sandbox": "sandbox allow-scripts allow-forms allow-popups allow-modals allow-pointer-lock; script-src 'self' 'unsafe-inline'"
+  }
+}

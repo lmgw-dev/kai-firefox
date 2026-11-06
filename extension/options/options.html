@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Kai for Firefox</title>
+<link rel="stylesheet" href="options.css">
+</head>
+<body>
+<main>
+  <h1>Kai for Firefox</h1>
+
+  <section aria-labelledby="status-h">
+    <h2 id="status-h">Link to Kai</h2>
+    <p id="state" role="status" aria-live="polite">Reading the status…</p>
+    <dl id="details"></dl>
+  </section>
+
+  <section aria-labelledby="settings-h">
+    <h2 id="settings-h">Settings</h2>
+    <form id="settings" novalidate>
+      <div class="field">
+        <label for="retry_ms">Retry interval (ms)</label>
+        <input id="retry_ms" name="retry_ms" type="number" min="1" step="1" required aria-describedby="retry_ms-help retry_ms-error">
+        <p class="help" id="retry_ms-help">How often Kai's helper tries to reach Kai while Kai is not running. When the helper itself cannot start, the extension waits this long before it starts it again, doubling the wait with each failure in a row up to one minute.</p>
+        <p class="error" id="retry_ms-error" hidden></p>
+      </div>
+      <div class="field">
+        <label for="nav_start_ms">Wait for Back and Forward (ms)</label>
+        <input id="nav_start_ms" name="nav_start_ms" type="number" min="1" step="1" required aria-describedby="nav_start_ms-help nav_start_ms-error">
+        <p class="help" id="nav_start_ms-help">Firefox's Back and Forward do nothing, silently, when there is no such page. Kai's Back and Forward report that when Firefox has not started a navigation within this time.</p>
+        <p class="error" id="nav_start_ms-error" hidden></p>
+      </div>
+      <div class="field">
+        <label for="nav_load_ms">Wait for a page (ms)</label>
+        <input id="nav_load_ms" name="nav_load_ms" type="number" min="1" step="1" required aria-describedby="nav_load_ms-help nav_load_ms-error">
+        <p class="help" id="nav_load_ms-help">How long Kai's Open, Go, Back, Forward and Reload wait for Firefox to load the page. After this time Kai is told the page has not loaded yet; the tab goes on loading.</p>
+        <p class="error" id="nav_load_ms-error" hidden></p>
+      </div>
+      <div class="field">
+        <label for="content_ms">Wait for a page to answer (ms)</label>
+        <input id="content_ms" name="content_ms" type="number" min="1" step="1" required aria-describedby="content_ms-help content_ms-error">
+        <p class="help" id="content_ms-help">How long Kai waits for a page (each of its frames) to answer when it reads the page or one of its elements. A page whose own script keeps it busy cannot answer; after this time Kai is told so.</p>
+        <p class="error" id="content_ms-error" hidden></p>
+      </div>
+      <div class="field">
+        <label for="keys_ms">Time for keys in one field (ms)</label>
+        <input id="keys_ms" name="keys_ms" type="number" min="1" step="1" required aria-describedby="keys_ms-help keys_ms-error">
+        <p class="help" id="keys_ms-help">How long Kai may press keys to fill one field: a slider stepped toward its number, a suggestion field typed one letter at a time. When the time is up Kai stops and is told how far it got.</p>
+        <p class="error" id="keys_ms-error" hidden></p>
+      </div>
+      <button type="submit">Save</button>
+      <p id="saved" role="status" aria-live="polite"></p>
+    </form>
+  </section>
+
+  <section aria-labelledby="perm-h">
+    <h2 id="perm-h">Permissions</h2>
+    <p id="sites"></p>
+    <button id="grant-sites" type="button" hidden>Allow access to all websites</button>
+    <p id="files"></p>
+    <p id="scripts"></p>
+    <button id="grant-scripts" type="button" hidden>Allow user scripts</button>
+  </section>
+</main>
+<script type="module" src="options.js"></script>
+</body>
+</html>

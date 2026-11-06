@@ -1,0 +1,12 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Partner frame</title></head>
+<body>
+<!-- framed.html's cross-origin frame (localhost): a button that saves with fetch. -->
+<p><button id="note">Save a note</button> <span id="status">idle</span></p>
+<script>
+  document.getElementById("note").addEventListener("click", () =>
+    fetch("/api/note", { method: "POST", body: "lamp" }).then((r) => (document.getElementById("status").textContent = `saved ${r.status}`), () => (document.getElementById("status").textContent = "save failed")));
+</script>
+</body>
+</html>

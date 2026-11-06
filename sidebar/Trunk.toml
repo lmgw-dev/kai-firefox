@@ -1,0 +1,38 @@
+# The sidebar page, built into the extension's sidebar folder (extension/sidebar/, gitignored: the
+# build output is made at package time, never committed; design §10). The page is
+# moz-extension://<id>/sidebar/sidebar.html, so every asset URL is relative.
+# scripts/sidebar.sh runs it (it stages the pinned lmgw crates first).
+[build]
+target = "sidebar.html"
+dist = "../extension/sidebar"
+public_url = "./"
+# No inline loader: an extension page allows `script-src 'self' 'wasm-unsafe-eval'` only. This
+# leaves the build's file names on a <meta> that assets/start.js, a module file, reads and loads
+# (lmgw's chat-plane design §8.4, D24).
+pattern_script = '<meta name="lmgw-wasm" data-js="{base}{js}" data-wasm="{base}{wasm}">'
+
+# `trunk watch` rebuilds on an edit here and in the staged lmgw crates.
+[watch]
+watch = [".", "../target/lmgw-pin"]
+ignore = ["target"]
+
+# Trunk names its page index.html whatever the target is called; the manifest's sidebar_action and
+# the background's sender check name sidebar/sidebar.html.
+[[hooks]]
+stage = "post_build"
+command = "sh"
+command_arguments = ["-c", "mv \"$TRUNK_STAGING_DIR/index.html\" \"$TRUNK_STAGING_DIR/sidebar.html\""]
+
+# Mermaid's one 5.6 MB script is over the 5 MB per file AMO's validator parses (an error that stops
+# the signing): a stand-in that says so takes its place (assets/mermaid-absent.js).
+[[hooks]]
+stage = "post_build"
+command = "sh"
+command_arguments = ["-c", "cp \"$TRUNK_SOURCE_DIR/assets/mermaid-absent.js\" \"$TRUNK_STAGING_DIR/vendor/mermaid/mermaid.min.js\""]
+
+# The fonts lmgw-ui's app.css names (IBM Plex) are under the SIL Open Font License, which goes with
+# them: its text beside them, fonts/OFL.txt (assets/IBM-Plex-OFL.txt; lmgw's crates carry none yet).
+[[hooks]]
+stage = "post_build"
+command = "sh"
+command_arguments = ["-c", "cp \"$TRUNK_SOURCE_DIR/assets/IBM-Plex-OFL.txt\" \"$TRUNK_STAGING_DIR/fonts/OFL.txt\""]

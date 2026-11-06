@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Framed: Northwind Gear</title>
+<style>iframe { width: 420px; height: 120px; border: 1px solid #888; }</style></head>
+<body>
+<h1>Frames that write</h1>
+<!-- A form of this page that posts into a frame of it, a cross-origin frame (localhost) whose
+     button saves with fetch, and a same-origin frame whose form posts to the top document. -->
+<form id="to-frame" action="/framed" method="post" target="result">
+  <input type="hidden" name="note" value="lamp">
+  <p><button>Post into the frame</button></p>
+</form>
+<iframe name="result" title="Result"></iframe>
+<iframe id="partner" title="Partner"></iframe>
+<iframe id="own" title="Own" src="frame-own.html"></iframe>
+<script>
+  document.getElementById("partner").src = `http://localhost:${location.port}/frame-inner.html`;
+</script>
+</body>
+</html>

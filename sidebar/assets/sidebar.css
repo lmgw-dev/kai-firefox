@@ -1,0 +1,52 @@
+/* The sidebar page around lmgw's Chat (design §8.5, D8): the kit's tokens, light or dark by
+   <html data-theme> (assets/boot.js), a column from 280 px up (Firefox opens a sidebar at 338 px).
+   Linked after the Chat's rules. */
+
+/* Firefox draws 12 px scrollbars by default; the base rules (lmgw-ui's app.css) make them thin in
+   the kit's colours with the standard properties, which Firefox honours. Kept here as well, so the
+   sidebar keeps them when the base rules move into the kit. */
+* { scrollbar-width: thin; scrollbar-color: var(--border-strong) transparent; }
+
+html, body { height: 100%; margin: 0; }
+body { background: var(--bg1); font-size: 13px; }
+
+.kai-sidebar { display: flex; flex-direction: column; height: 100vh; min-width: 0; }
+.kai-chat { flex: 1 1 auto; min-height: 0; min-width: 0; position: relative; display: flex; }
+.kai-chat > * { flex: 1 1 auto; min-width: 0; }
+
+/* The site strip: one line, the site and its rule, the hints switch, Attach page. */
+.kai-strip { flex: none; display: flex; align-items: center; gap: 6px; height: 32px; padding: 0 6px 0 10px;
+  border-bottom: 1px solid var(--border); background: var(--bg0); color: var(--text-2);
+  font-size: var(--fs-sm, 12px); min-width: 0; }
+.kai-site { flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  color: var(--text); }
+.kai-strip .chip { flex: none; height: 20px; padding: 0 8px; font-size: 11px; }
+.kai-strip .kai-link { border: 0; cursor: pointer; min-width: 0; overflow: hidden; text-overflow: ellipsis;
+  white-space: nowrap; }
+.kai-strip-gap { flex: 1 1 auto; }
+.kai-hints { flex: none; display: inline-flex; align-items: center; gap: 4px; cursor: pointer;
+  user-select: none; }
+.kai-hints input { margin: 0; accent-color: var(--accent); }
+.kai-hints:has(input:disabled) { opacity: .5; cursor: default; }
+.kai-strip .kai-attach { flex: none; gap: 4px; padding: 0 6px; }
+.kai-attach svg { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 1.4;
+  stroke-linecap: round; stroke-linejoin: round; }
+
+/* What the page says about the link besides the strip. */
+.kai-notice { flex: none; display: flex; align-items: center; gap: 8px; padding: 6px 10px;
+  font-size: var(--fs-sm, 12px); border-bottom: 1px solid var(--border); }
+.kai-notice span { flex: 1 1 auto; min-width: 0; }
+.kai-notice.warn { background: var(--amber-bg); color: var(--amber); }
+.kai-notice.err { background: var(--err-bg); color: var(--err); }
+
+/* The Chat's head at the sidebar's narrow width (lmgw-chat-ui's .chat-shell.narrow, below about
+   716 px at 125 %): Export joins the first line (the list's button, the model, the settings'
+   button) as an icon, its word staying the button's name, so the line does not wrap at 280 px;
+   only the badges go under it. The real fix belongs in lmgw-chat-ui's .chat-head (lmgw's
+   chat-plane design §9.8, not built yet); until then the sidebar carries it. */
+.kai-chat .chat-shell.narrow .chat-head .export-menu { order: 0; margin-left: 0; }
+.kai-chat .chat-shell.narrow .chat-head .export-menu .btn { width: 30px; height: 30px; padding: 0;
+  justify-content: center; font-size: 0; }
+.kai-chat .chat-shell.narrow .chat-head .export-menu .btn::before { content: ""; width: 16px;
+  height: 16px; background: currentColor;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M8 2.5v8M4.5 7 8 10.5 11.5 7M3 13.5h10'/%3E%3C/svg%3E") center / contain no-repeat; }

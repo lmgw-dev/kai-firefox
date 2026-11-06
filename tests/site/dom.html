@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>DOM: Northwind Gear</title>
+</head>
+<body>
+<h1>The page as HTML</h1>
+<!-- a comment stays -->
+<p id="quote" data-note='Say "hi" &amp; wave'>Fish &amp; chips &lt;3</p>
+<div id="open-host"></div>
+<div id="closed-host"></div>
+<section aria-label="Consent area"><h2>Consent</h2><iframe id="consent" title="Cookie consent"></iframe></section>
+<svg width="10" height="10" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4"></circle></svg>
+<form id="login"><label>Password <input type="password" id="pin" name="pin"></label><label>Code <textarea id="otp" autocomplete="one-time-code"></textarea></label></form>
+<script>
+  // An open shadow root, a closed one, and an open one inside the closed one.
+  document.getElementById("open-host").attachShadow({ mode: "open" }).innerHTML = "<p>Open part</p>";
+  const closed = document.getElementById("closed-host").attachShadow({ mode: "closed" });
+  closed.innerHTML = '<p>Closed part</p><span id="inner-host"></span>';
+  closed.getElementById("inner-host").attachShadow({ mode: "open" }).innerHTML = "<b>Nested part</b>";
+  if (1 < 2 && 3 > 2) document.getElementById("consent").src = `http://localhost:${location.port}/consent.html`;
+  // As React does: what is typed is written back into the value attribute and the text.
+  const pin = document.getElementById("pin");
+  pin.addEventListener("input", () => pin.setAttribute("value", pin.value));
+  const otp = document.getElementById("otp");
+  otp.addEventListener("input", () => (otp.defaultValue = otp.value));
+</script>
+</body>
+</html>

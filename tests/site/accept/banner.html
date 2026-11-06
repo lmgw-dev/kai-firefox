@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Cookie banner</title>
+<style>body { font: 14px/1.4 sans-serif; margin: 8px; }</style></head>
+<body>
+<!-- A consent banner as consent platforms frame it: from their own origin, with a close button
+     that tells the page to take the frame away. -->
+<div role="region" aria-label="Cookies">
+  <p>Northwind Outdoor uses cookies to remember your cart.</p>
+  <button id="accept">Accept all</button> <button id="reject">Reject all</button>
+  <button id="close" aria-label="Close the cookie banner">×</button>
+</div>
+<script>
+  document.getElementById("close").addEventListener("click", () => parent.postMessage("banner-closed", "*"));
+</script>
+</body>
+</html>

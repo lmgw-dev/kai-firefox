@@ -1,0 +1,37 @@
+{
+  "manifest_version": 3,
+  "name": "Kai for Firefox",
+  "version": "0.1.0",
+  "description": "Makes Firefox part of Kai: Kai reads and operates the pages open in Firefox. Needs a running Kai.",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "kai-firefox@rootshell.dev",
+      "strict_min_version": "154.0",
+      "data_collection_permissions": { "required": ["none"] }
+    }
+  },
+  "icons": { "48": "icons/kai.svg", "96": "icons/kai.svg" },
+  "background": { "scripts": ["background/main.js"], "type": "module" },
+  "permissions": ["nativeMessaging", "tabs", "scripting", "webNavigation", "webRequest", "webRequestBlocking", "storage", "search", "find", "history", "contextualIdentities", "cookies", "bookmarks", "downloads"],
+  "optional_permissions": ["userScripts"],
+  "host_permissions": ["<all_urls>"],
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["vendor/dom-accessibility-api.js", "content/kai.js", "content/walk.js", "content/read.js", "content/overlay.js", "content/act.js", "content/page.js", "content/listen.js", "content/aloud.js"],
+      "all_frames": true,
+      "run_at": "document_start"
+    }
+  ],
+  "action": { "default_icon": "icons/kai.svg", "theme_icons": [{ "light": "icons/kai-mark-light.svg", "dark": "icons/kai-mark-dark.svg", "size": 16 }, { "light": "icons/kai-mark-light.svg", "dark": "icons/kai-mark-dark.svg", "size": 32 }], "default_title": "Kai for Firefox" },
+  "sidebar_action": { "default_panel": "sidebar/sidebar.html", "default_title": "Kai", "default_icon": "icons/kai.svg", "theme_icons": [{ "light": "icons/kai-mark-light.svg", "dark": "icons/kai-mark-dark.svg", "size": 16 }, { "light": "icons/kai-mark-light.svg", "dark": "icons/kai-mark-dark.svg", "size": 32 }], "open_at_install": false },
+  "commands": {
+    "_execute_sidebar_action": { "suggested_key": { "default": "Ctrl+Alt+K" }, "description": "Open or close Kai's sidebar" }
+  },
+  "sandbox": { "pages": ["sidebar/preview.html"] },
+  "content_security_policy": {
+    "extension_pages": "default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' blob: data:; media-src 'self' blob: data:; font-src 'self' data:; connect-src 'self' http: https: file: data: blob:; object-src 'none'; upgrade-insecure-requests;",
+    "sandbox": "sandbox allow-scripts allow-forms allow-popups allow-modals allow-pointer-lock; script-src 'self' 'unsafe-inline'"
+  },
+  "options_ui": { "page": "options/options.html", "open_in_tab": true }
+}

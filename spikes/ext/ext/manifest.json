@@ -1,0 +1,25 @@
+{
+  "manifest_version": 3,
+  "name": "Kai for Firefox WP0 spike",
+  "version": "0.1.0",
+  "description": "Throwaway extension for the WP0 spike: native port lifecycle, userScripts, element naming.",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "kai-firefox-spike@rootshell.dev",
+      "strict_min_version": "154.0",
+      "data_collection_permissions": { "required": ["none"] }
+    }
+  },
+  "background": { "scripts": ["config.js", "background.js"] },
+  "permissions": ["nativeMessaging", "storage", "scripting", "tabs", "webNavigation"],
+  "optional_permissions": ["userScripts"],
+  "host_permissions": ["http://127.0.0.1/*", "http://localhost/*"],
+  "content_scripts": [
+    {
+      "matches": ["http://127.0.0.1/*", "http://localhost/*"],
+      "js": ["naming.bundle.js"],
+      "all_frames": true,
+      "run_at": "document_idle"
+    }
+  ]
+}

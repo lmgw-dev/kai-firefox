@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Your order: Northwind Outdoor</title>
+<style>
+  body { font: 16px/1.5 sans-serif; margin: 0 24px; }
+  [role=option][aria-selected=true] { background: #3daee9; }
+  #note { border: 1px solid #888; min-height: 2em; padding: 2px; }
+</style>
+</head>
+<body>
+<!-- The acceptance runs' order form (kai-firefox design §6.6): a controlled input, a combobox and a
+     rich editor as the page code that keeps them, a slider, a select, a checkbox and a file input;
+     "Place order" posts it. -->
+<h1>Your order</h1>
+<p id="item-line">Item: <span id="item-name">none</span></p>
+<form id="order" action="/accept/order" method="post" enctype="multipart/form-data">
+  <input type="hidden" name="item" id="item">
+  <p><label for="name">Full name</label> <input id="name" name="name" autocomplete="off"></p>
+  <p id="greeting">Order for nobody</p>
+  <p><label for="city">City</label> <input id="city" name="city" role="combobox" aria-autocomplete="list" aria-controls="cities" aria-expanded="false" autocomplete="off"></p>
+  <ul id="cities" role="listbox" aria-label="Cities" hidden></ul>
+  <p><label for="zip">Postcode</label> <input id="zip" name="postcode" inputmode="numeric"></p>
+  <div><span id="note-label">Delivery note</span> <div id="note" contenteditable="true" role="textbox" aria-multiline="true" aria-labelledby="note-label"><p><br></p></div></div>
+  <input type="hidden" name="note" id="note-field">
+  <p>Note as the editor keeps it: <span id="note-model"></span></p>
+  <p><label for="tip">Tip for the courier</label> <input id="tip" name="tip" type="range" min="0" max="10" step="1" value="0"> <output id="tip-out" for="tip">0</output> €</p>
+  <p><label for="speed">Delivery</label> <select id="speed" name="delivery"><option>Standard</option><option>Express</option><option>Pickup</option></select></p>
+  <p><label><input type="checkbox" id="gift" name="gift"> Gift wrap</label></p>
+  <p><label for="photo">Photo of your door</label> <input id="photo" name="photo" type="file"> <span id="photo-name">no file</span></p>
+  <p><button id="place">Place order</button></p>
+</form>
+<script>
+  const $ = (id) => document.getElementById(id);
+  // The item from the product page's link.
+  const CATALOG = { "trail-lamp": "Trail Lamp", "lantern-classic": "Lantern Classic", "headlamp-pro": "Headlamp Pro", "desk-lamp-mini": "Desk Lamp Mini" };
+  const item = new URLSearchParams(location.search).get("item") || "";
+  $("item").value = item;
+  $("item-name").textContent = CATALOG[item] || "none";
+
+  // A controlled input as React keeps it: rendered from state, with a tracker on the element's own
+  // `value` property; only a value set natively and then an input event updates the state.
+  const state = { name: "" };
+  const nameEl = $("name");
+  const native = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value");
+  let tracked = "";
+  Object.defineProperty(nameEl, "value", {
+    configurable: true,
+    get() { return native.get.call(this); },
+    set(v) { tracked = String(v); native.set.call(this, v); },
+  });
+  nameEl.addEventListener("input", () => {
+    const v = native.get.call(nameEl);
+    if (v === tracked) return;
+    tracked = v;
+    state.name = v;
+    nameEl.value = state.name;
+    $("greeting").textContent = `Order for ${state.name || "nobody"}`;
+  });
+
+  // A combobox whose suggestions follow what is typed.
+  const CITIES = ["Berlin", "Bern", "Bremen", "Bonn", "Vienna"];
+  const city = $("city");
+  const cities = $("cities");
+  city.addEventListener("input", () => {
+    const q = city.value.toLowerCase();
+    const hits = q ? CITIES.filter((c) => c.toLowerCase().startsWith(q)) : [];
+    cities.replaceChildren(...hits.map((c) => {
+      const li = document.createElement("li");
+      li.setAttribute("role", "option");
+      li.setAttribute("aria-selected", "false");
+      li.textContent = c;
+      li.addEventListener("click", () => {
+        city.value = c;
+        cities.hidden = true;
+        city.setAttribute("aria-expanded", "false");
+      });
+      return li;
+    }));
+    cities.hidden = !hits.length;
+    city.setAttribute("aria-expanded", String(!cities.hidden));
+  });
+
+  // A rich editor that keeps its own model and changes only through beforeinput, as editors
+  // built on it do; the DOM is rendered from the model, the form posts the model.
+  const note = $("note");
+  let model = "";
+  function renderNote() {
+    const p = document.createElement("p");
+    p.textContent = model;
+    if (!model) p.append(document.createElement("br"));
+    note.replaceChildren(p);
+    $("note-model").textContent = model;
+    $("note-field").value = model;
+  }
+  const offsetIn = (node, offset) => {
+    const r = document.createRange();
+    r.selectNodeContents(note);
+    r.setEnd(node, offset);
+    return r.toString().length;
+  };
+  note.addEventListener("beforeinput", (e) => {
+    e.preventDefault();
+    const range = e.getTargetRanges()[0] ?? (getSelection().rangeCount ? getSelection().getRangeAt(0) : null);
+    let s = model.length;
+    let end = model.length;
+    if (range) {
+      s = offsetIn(range.startContainer, range.startOffset);
+      end = offsetIn(range.endContainer, range.endOffset);
+    }
+    if (e.inputType.startsWith("insert")) model = model.slice(0, s) + (e.data ?? "") + model.slice(end);
+    else if (e.inputType.startsWith("delete")) model = s === end ? model.slice(0, Math.max(0, s - 1)) + model.slice(end) : model.slice(0, s) + model.slice(end);
+    renderNote();
+  });
+
+  $("tip").addEventListener("input", () => ($("tip-out").value = $("tip").value));
+  $("photo").addEventListener("change", () => {
+    const f = $("photo").files[0];
+    $("photo-name").textContent = f ? `${f.name} (${f.size} bytes)` : "no file";
+  });
+</script>
+</body>
+</html>

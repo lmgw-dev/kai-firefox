@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Frames: Northwind Gear</title>
+<style>iframe { width: 300px; height: 80px; border: 1px solid #888; }</style></head>
+<body>
+<h1>Frames</h1>
+<p>A frame from a restricted domain, a sandboxed frame and a cross-origin frame.</p>
+<iframe id="restricted" title="Partner offers"></iframe>
+<iframe id="sandboxed" title="Reviews" sandbox="" src="help.html"></iframe>
+<iframe id="consent" title="Cookie consent"></iframe>
+<script>
+  // 127.0.0.2 is on the test profile's restricted domains; localhost is the other origin.
+  document.getElementById("restricted").src = `http://127.0.0.2:${location.port}/help.html`;
+  document.getElementById("consent").src = `http://localhost:${location.port}/consent.html`;
+</script>
+</body>
+</html>

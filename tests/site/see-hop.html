@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Hop: Northwind Gear</title>
+<style>
+  html, body { margin: 0; background: #ffffff; }
+  #go { position: absolute; left: 40px; top: 40px; width: 160px; height: 40px; }
+  iframe { position: absolute; left: 300px; top: 40px; width: 300px; height: 200px; border: 0; }
+</style>
+</head>
+<body>
+<button id="go">Go</button>
+<iframe id="pane" title="Pane"></iframe>
+<script>
+  // The pane comes from the other origin (localhost vs 127.0.0.1), on the same port.
+  document.getElementById("pane").src = `http://localhost:${location.port}/see-hop-frame.html`;
+  // When an element outside the page's own (Kai's labels' host) is hidden for a screenshot, this
+  // page keeps its thread busy for a while, so the capture comes well after the pane has gone.
+  new MutationObserver((records) => {
+    for (const r of records) {
+      const el = r.target;
+      if (el.parentNode === document.documentElement && el !== document.body && el !== document.head && el.style.display === "none") {
+        const t = Date.now();
+        while (Date.now() - t < 600);
+        return;
+      }
+    }
+  }).observe(document.documentElement, { attributes: true, subtree: true, attributeFilter: ["style"] });
+</script>
+</body>
+</html>

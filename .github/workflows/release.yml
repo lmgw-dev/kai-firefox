@@ -1,0 +1,301 @@
+# Public releases, one per pushed tag v<X.Y.Z>. Development happens in a separate repository;
+# scripts/publish-github.sh brings it here as one squashed commit per publish, and with --tag puts
+# the tag on that public commit (docs/releasing.md, "Releases channel: GitHub"). A push to main
+# alone only runs ci.yml. A run can also be started by hand from the Actions tab, with the tag as
+# "Use workflow from": the build refuses a branch.
+#
+# The tag is the version: v<base>, <base> being extension/manifest.json's three-part version
+# (scripts/release.sh tags it). The XPI is signed as <base>.0 (scripts/sign.mjs --release) and its
+# update_url is releases/latest/download/updates.json. The release notes are the annotated tag's
+# message.
+#
+# Three jobs, so the secrets and the token that can write never meet the build:
+#   build    contents: read, NO secrets. Compiles the sidebar page (Rust: every dependency's build
+#            script and proc macro, trunk, wasm-opt; npm install scripts) and checks the whole
+#            signing path with `sign --dry-run` (stage, lint, source archive; AMO is not contacted).
+#            It hands on the built page and its record only.
+#   sign     contents: read, the AMO secrets (environment amo-release). A fresh checkout of the tag with `npm ci
+#            --ignore-scripts`, the page from the build job, and `node scripts/sign.mjs --release`.
+#            That is the only step with the secrets, and the code that runs in it is
+#            scripts/sign.mjs (+ channel.mjs, xpi.mjs, sidebar-build.mjs) of the tag, web-ext and
+#            its npm dependencies as package-lock.json pins them (no install scripts), and git.
+#            No Rust, no trunk, no lmgw. The artifact is unpacked outside the checkout, its file
+#            list is checked (only extension/sidebar/** and target/sidebar-build.json, regular
+#            files) and only those are copied in, so it cannot replace code that runs here.
+#            sign.mjs then refuses a page that differs from the build record (sources, lmgw tree,
+#            output hash). That check is consistency, not integrity: a compromised build job can
+#            write a page and a matching record, and the page is signed as built.
+#   publish  contents: write, runs no code of this repository: it checks the files (names, count,
+#            the version in updates.json, sha256) and creates the release with gh.
+#
+# Settings > Secrets and variables > Actions (docs/releasing.md):
+#   Environment amo-release (deployment tags: v*), secrets AMO_JWT_ISSUER, AMO_JWT_SECRET
+#
+# lmgw's crates come from the public lmgw at the release LMGW_PIN names (lmgw_tag), cloned beside
+# the build; it is refused unless its tree is the pinned tree, so lmgw's release must be published
+# before the Kai for Firefox that names it (while lmgw_tag is `unpublished` the release fails at
+# that step and says so).
+name: release
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+# Each job names what it needs.
+permissions: {}
+
+# One release at a time and never cancelled half-way.
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  build:
+    name: Build
+    # Not in forks: they hold no AMO secrets.
+    if: github.repository == 'lmgw-dev/kai-firefox'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    timeout-minutes: 60
+    steps:
+      - name: Run on a v<X.Y.Z> tag
+        run: |
+          [[ "$GITHUB_REF_TYPE" == tag && "$GITHUB_REF_NAME" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]] \
+            || { echo "::error::this workflow releases a v<X.Y.Z> tag; ref is $GITHUB_REF_TYPE $GITHUB_REF_NAME"; exit 1; }
+
+      - uses: actions/checkout@v7
+        with:
+          # scripts/sign.mjs refuses a shallow clone.
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: The tag is the manifest's version
+        run: |
+          base=$(node -p "require('./extension/manifest.json').version")
+          [[ "$GITHUB_REF_NAME" == "v$base" ]] \
+            || { echo "::error::tag $GITHUB_REF_NAME, but extension/manifest.json says $base"; exit 1; }
+          [[ "$(node -p "require('./package.json').version")" == "$base" ]] \
+            || { echo "::error::package.json and extension/manifest.json disagree"; exit 1; }
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+
+      - run: npm ci
+
+      # rustup's Rust at scripts/ci/rust-version, as GitLab CI's and the source upload's
+      # rust-toolchain.toml name it.
+      - name: The sidebar page's tools (Rust with the wasm32 target, trunk, wasm-bindgen, wasm-opt; pinned)
+        run: |
+          set -euo pipefail
+          rust=$(cat scripts/ci/rust-version)
+          rustup toolchain install "$rust" --profile minimal --target wasm32-unknown-unknown
+          echo "RUSTUP_TOOLCHAIN=$rust" >> "$GITHUB_ENV"
+          bash scripts/ci/install-trunk.sh "$HOME/.local/bin"
+          bash scripts/ci/install-wasm-tools.sh "$HOME/.local/bin"
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: lmgw at the pinned release
+        run: bash scripts/lmgw-pin.sh clone-published "$RUNNER_TEMP/lmgw"
+
+      - name: Build the sidebar page
+        env:
+          LMGW_DIR: ${{ runner.temp }}/lmgw
+        run: bash scripts/sidebar.sh release
+
+      # No secret: stage, lint and the source archive of the very release, everything but AMO.
+      - name: Check the signing path (no AMO)
+        run: npm run sign -- --release --dry-run
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: sidebar
+          path: |
+            extension/sidebar/
+            target/sidebar-build.json
+          if-no-files-found: error
+          retention-days: 7
+
+  sign:
+    name: Sign with AMO
+    needs: build
+    if: github.repository == 'lmgw-dev/kai-firefox'
+    runs-on: ubuntu-latest
+    # The AMO secrets are environment secrets here (docs/releasing.md), restricted to v* tags.
+    environment: amo-release
+    permissions:
+      contents: read
+    # sign waits up to 60 minutes for AMO (--wait-min), and a re-run resumes.
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+
+      # No install scripts, no cache: this job holds the AMO secrets.
+      - run: npm ci --ignore-scripts
+
+      # The artifact comes from the build job, which runs untrusted code, so it never lands in the
+      # checkout directly: it is unpacked beside it, its file list must be exactly
+      # extension/sidebar/** and target/sidebar-build.json as regular files (no symlink, no
+      # hard link, no `..`, nothing else), and only those are copied in. A path such as
+      # scripts/sign.mjs, node_modules/ or .git/config therefore cannot be overwritten.
+      - uses: actions/download-artifact@v8
+        with:
+          name: sidebar
+          path: ${{ runner.temp }}/sidebar
+
+      - name: Verify the sidebar artifact and copy it in
+        env:
+          STAGE: ${{ runner.temp }}/sidebar
+        run: |
+          set -euo pipefail
+          cd "$STAGE"
+          bad=$(find . -mindepth 1 \( -type l -o \( -type f -links +1 \) \
+                -o \( ! -type f ! -type d \) \) -print)
+          [ -z "$bad" ] || { echo "not regular files:"; echo "$bad"; exit 1; }
+          bad=$(find . -type f ! -path './extension/sidebar/*' ! -path ./target/sidebar-build.json -print)
+          [ -z "$bad" ] || { echo "unexpected files in the artifact:"; echo "$bad"; exit 1; }
+          bad=$(find . -type d ! -path . ! -path ./extension ! -path './extension/sidebar' \
+                ! -path './extension/sidebar/*' ! -path ./target -print)
+          [ -z "$bad" ] || { echo "unexpected directories in the artifact:"; echo "$bad"; exit 1; }
+          if find . -name '..*' -print | grep -q .; then echo "odd names"; exit 1; fi
+          [ -f target/sidebar-build.json ] || { echo "no build record"; exit 1; }
+          [ -n "$(find extension/sidebar -type f -print -quit)" ] || { echo "no sidebar files"; exit 1; }
+          cd "$GITHUB_WORKSPACE"
+          rm -rf extension/sidebar
+          mkdir -p extension target
+          cp -R --no-dereference "$STAGE/extension/sidebar" extension/sidebar
+          cp --no-dereference "$STAGE/target/sidebar-build.json" target/sidebar-build.json
+
+      - name: Sign with AMO
+        run: npm run sign -- --release
+        env:
+          AMO_JWT_ISSUER: ${{ secrets.AMO_JWT_ISSUER }}
+          AMO_JWT_SECRET: ${{ secrets.AMO_JWT_SECRET }}
+
+      # Exactly the three files the release carries, no secret here. gh names an asset after its
+      # file, so the fixed-name copy is a file of that name.
+      - name: Stage the release files
+        run: |
+          set -euo pipefail
+          mkdir release
+          cp target/sign/*/kai-firefox-*.xpi release/
+          cp target/sign/*/kai-firefox-*.xpi release/kai-firefox.xpi
+          cp target/sign/*/updates.json release/
+          ls -l release
+      - uses: actions/upload-artifact@v7
+        with:
+          name: release
+          path: release/
+          if-no-files-found: error
+          retention-days: 7
+
+  publish:
+    name: Publish
+    needs: sign
+    if: github.repository == 'lmgw-dev/kai-firefox'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # create the release, upload assets
+    timeout-minutes: 15
+    env:
+      GH_REPO: ${{ github.repository }}
+      TAG: ${{ github.ref_name }}
+    # No checkout: this job runs only the steps below, with the runner's own gh and sha256sum.
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: release
+          path: release
+
+      - name: Check the build against the tag
+        id: manifest
+        run: |
+          fail() { echo "::error::$*"; exit 1; }
+          [[ "$TAG" =~ ^v([0-9]+\.[0-9]+\.[0-9]+)$ ]] || fail "$TAG is no v<X.Y.Z> tag"
+          version="${BASH_REMATCH[1]}"
+          xpi="kai-firefox-${version}.0.xpi"
+          files="$(cd release && find . -mindepth 1 -printf '%P\n' | LC_ALL=C sort)"
+          [[ "$files" == "$(printf '%s\n' "$xpi" kai-firefox.xpi updates.json | LC_ALL=C sort)" ]] \
+            || fail "the build handed on other files than $xpi, kai-firefox.xpi and updates.json: $files"
+          for f in "$xpi" kai-firefox.xpi updates.json; do
+            [[ -f "release/$f" && ! -L "release/$f" ]] || fail "$f is not a plain file"
+          done
+          cmp -s "release/$xpi" release/kai-firefox.xpi || fail "kai-firefox.xpi is not the signed $xpi"
+          grep -q "\"version\": *\"${version}.0\"" release/updates.json || fail "updates.json does not name ${version}.0"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "xpi=$xpi" >> "$GITHUB_OUTPUT"
+
+      - name: Publish release v${{ steps.manifest.outputs.version }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.manifest.outputs.version }}
+          XPI: ${{ steps.manifest.outputs.xpi }}
+        run: |
+          tag="v${VERSION}"
+          dist=release
+          # A re-run of this tag: what is there already. gh release view finds no draft by its tag,
+          # so ask the API (it lists drafts to a token that can write).
+          existing="$(gh api --paginate "repos/${GH_REPO}/releases" \
+            --jq ".[] | select(.tag_name == \"${tag}\") | \"\(.id) \(.draft)\"")"
+          if grep -q ' false$' <<<"$existing"; then
+            echo "::error::release ${tag} is published already; a published release's assets are not replaced (delete the release by hand to release the tag again)"
+            exit 1
+          fi
+          # Only drafts are left (a failed upload leaves one): drop them, the create below makes
+          # the release again with all files. The tag stays.
+          while read -r id _; do
+            [[ -n "$id" ]] || continue
+            gh api -X DELETE "repos/${GH_REPO}/releases/${id}"
+          done <<<"$existing"
+          # The notes are the annotated tag's message (asked of the API: this job has no
+          # checkout), unwrapped to one line per paragraph: GitHub shows every line break. A
+          # lightweight tag gets GitHub's generated notes instead.
+          unwrap="$RUNNER_TEMP/unwrap-notes.awk"
+          cat > "$unwrap" <<'AWK'
+          function flush() {
+              if (buf != "") print buf
+              buf = ""
+          }
+          /^[[:space:]]*```/ { flush(); print; fence = !fence; next }
+          fence { print; next }
+          /^[[:space:]]*$/ { flush(); print ""; next }
+          /^[[:space:]]*(#|>|\|)/ { flush(); print; next }
+          /^[[:space:]]*([-*+]|[0-9]+[.)])[[:space:]]/ { flush(); buf = $0; next }
+          {
+              if (buf == "") { buf = $0; next }
+              line = $0
+              sub(/^[[:space:]]+/, "", line)
+              buf = buf " " line
+          }
+          END { flush() }
+          AWK
+          ref="$(gh api "repos/${GH_REPO}/git/ref/tags/${tag}" --jq '.object.type + " " + .object.sha')"
+          notes=""
+          if [[ "$ref" == "tag "* ]]; then
+            notes="$(gh api "repos/${GH_REPO}/git/tags/${ref#tag }" --jq .message | awk -f "$unwrap")"
+          fi
+          if [[ -n "${notes//[[:space:]]/}" ]]; then
+            notes_args=(--notes "$notes")
+          else
+            notes_args=(--generate-notes)
+          fi
+          # With assets, gh creates a draft, uploads, then publishes: the release never appears
+          # without all files.
+          gh release create "$tag" "$dist/${XPI}" "$dist/kai-firefox.xpi" "$dist/updates.json" \
+            --title "Kai for Firefox ${VERSION}" \
+            "${notes_args[@]}" \
+            --verify-tag \
+            --latest

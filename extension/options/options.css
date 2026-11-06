@@ -1,0 +1,40 @@
+/* Breeze-like graphite and blue, light and dark from the desktop. */
+:root {
+  color-scheme: light dark;
+  --bg: #eff0f1;
+  --card: #fcfcfc;
+  --text: #232629;
+  --muted: #5d6166;
+  --line: #bdc3c7;
+  --accent: #3daee9;
+  --accent-text: #1d6fa5;
+  --bad: #da4453;
+  --good: #27ae60;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1b1e20;
+    --card: #232629;
+    --text: #fcfcfc;
+    --muted: #a1a9b1;
+    --line: #4d4d4d;
+    --accent-text: #3daee9;
+  }
+}
+body { margin: 0; background: var(--bg); color: var(--text); font: 14px/1.5 system-ui, sans-serif; }
+main { max-width: 760px; margin: 0 auto; padding: 24px; }
+h1 { font-size: 22px; margin: 0 0 16px; }
+h2 { font-size: 16px; margin: 0 0 8px; }
+section { background: var(--card); border: 1px solid var(--line); border-radius: 6px; padding: 16px; margin-bottom: 16px; }
+dl { display: grid; grid-template-columns: max-content 1fr; gap: 4px 16px; margin: 8px 0 0; }
+dt { color: var(--muted); }
+dd { margin: 0; overflow-wrap: anywhere; }
+.field { margin-bottom: 14px; }
+label { display: block; font-weight: 600; }
+input { font: inherit; padding: 4px 6px; width: 12em; border: 1px solid var(--line); border-radius: 4px; background: var(--bg); color: var(--text); }
+input:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.help { color: var(--muted); margin: 4px 0 0; }
+.error { color: var(--bad); margin: 4px 0 0; }
+button { font: inherit; padding: 5px 14px; border-radius: 4px; border: 1px solid var(--accent); background: var(--accent); color: #fcfcfc; cursor: pointer; }
+#state.linked { color: var(--good); }
+#state.bad { color: var(--bad); }
